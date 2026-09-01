@@ -38,5 +38,5 @@ export const event = {
     { id: "expectation", label: "Bạn mong chờ điều gì nhất ở Hòa Âm Hỏa Ý?", type: "textarea", required: true, placeholder: "Kể chúng mình nghe một chút nhé...", step: 2 },
     { id: "joinFuture", label: "Bạn có muốn nhận thông tin các hoạt động tiếp theo của Đội không?", type: "yesno", required: true, step: 3 },
     { id: "note", label: "Có điều gì bạn muốn nhắn với BTC không?", type: "textarea", placeholder: "Không bắt buộc đâu nha 💙", step: 3 }
-  ] satisfies Question[]
+  ] as Question[]
 };

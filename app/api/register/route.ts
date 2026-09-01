@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { registrationSchema } from "@/lib/validation";
 import { clientIp, hashIp, normalizePhone, verifyTurnstile } from "@/lib/security";
-import { getAdminSupabase } from "@/lib/supabase";
+import { getRegistrationEdgeConfig } from "@/lib/supabase";
 import { mirrorToGoogleSheets } from "@/lib/googleSheets";
 
 export const runtime = "nodejs";
@@ -17,8 +17,12 @@ export async function POST(req: NextRequest) {
     if (!req.headers.get("content-type")?.includes("application/json")) return response({ error: "Định dạng yêu cầu không hợp lệ." }, 415);
     const origin = req.headers.get("origin");
     const configuredOrigin = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+    const host = req.headers.get("host");
+    const proto = req.headers.get("x-forwarded-proto") || "https";
+    const requestOrigin = host ? `${proto}://${host}` : undefined;
     const vercelOrigin = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined;
-    if (process.env.NODE_ENV === "production" && origin && origin !== configuredOrigin && origin !== vercelOrigin) return response({ error: "Nguồn yêu cầu không được phép." }, 403);
+    const allowedOrigins = new Set([configuredOrigin, requestOrigin, vercelOrigin].filter(Boolean));
+    if (process.env.NODE_ENV === "production" && origin && !allowedOrigins.has(origin)) return response({ error: "Nguồn yêu cầu không được phép." }, 403);
     const length = Number(req.headers.get("content-length") || "0");
     if (length > 30_000) return response({ error: "Dữ liệu quá lớn." }, 413);
 
@@ -29,11 +33,6 @@ export async function POST(req: NextRequest) {
     const ip = clientIp(req.headers);
     const ipHash = hashIp(ip);
     if (!(await verifyTurnstile(parsed.data.turnstileToken, ip))) return response({ error: "Xác minh chống bot chưa thành công. Vui lòng thử lại." }, 403);
-
-    const supabase = getAdminSupabase();
-    const { data: allowed, error: rateError } = await supabase.rpc("check_registration_rate_limit", { p_ip_hash: ipHash });
-    if (rateError) throw rateError;
-    if (!allowed) return response({ error: "Bạn thao tác hơi nhanh. Vui lòng thử lại sau một lúc." }, 429);
 
     const submissionId = crypto.randomUUID();
     const row = {
@@ -52,11 +51,21 @@ export async function POST(req: NextRequest) {
       user_agent: (req.headers.get("user-agent") || "").slice(0, 500)
     };
 
-    const { error } = await supabase.from("registrations").insert(row);
-    if (error) {
-      if (error.code === "23505") return response({ error: "Email hoặc số điện thoại này đã được đăng ký rồi." }, 409);
-      throw error;
-    }
+    const edge = getRegistrationEdgeConfig();
+    const edgeRes = await fetch(`${edge.url}/functions/v1/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${edge.anonJwt}`,
+        apikey: edge.anonJwt,
+      },
+      body: JSON.stringify(row),
+      cache: "no-store",
+    });
+    const edgeBody = await edgeRes.json().catch(() => ({})) as { error?: string; ok?: boolean };
+    if (edgeRes.status === 429 || edgeBody.error === "rate_limited") return response({ error: "Bạn thao tác hơi nhanh. Vui lòng thử lại sau một lúc." }, 429);
+    if (edgeRes.status === 409 || edgeBody.error === "duplicate") return response({ error: "Email hoặc số điện thoại này đã được đăng ký rồi." }, 409);
+    if (!edgeRes.ok || !edgeBody.ok) throw new Error(`registration_edge_failed:${edgeRes.status}`);
 
     // Google Sheets is a mirror, never allowed to make a successful registration fail.
     await mirrorToGoogleSheets({ timestamp: new Date().toISOString(), ...row, ip_hash: undefined, user_agent: undefined }).catch(() => undefined);
