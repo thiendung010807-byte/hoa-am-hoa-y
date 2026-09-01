@@ -188,3 +188,23 @@ vercel.json
 ## Trang đăng ký riêng
 
 Form đăng ký nằm tại `/dang-ky`, mỗi câu hỏi hiển thị theo dạng full-screen onboarding một câu/màn hình. CTA trên trang chính dẫn sang route này.
+
+
+## Google Sheets mirror + tổng số người tham gia
+
+Mỗi đăng ký được lưu vào Supabase trước. Sau khi Supabase xác nhận thành công, server sẽ mirror dữ liệu sang Google Sheets qua Apps Script. Google Sheets không quyết định việc đăng ký có thành công hay không, vì vậy lỗi Sheets tạm thời sẽ không làm mất đăng ký trong Supabase.
+
+1. Tạo một Google Sheet mới.
+2. Vào **Extensions → Apps Script** và dán toàn bộ file `supabase/google-apps-script.gs`.
+3. Vào **Project Settings → Script Properties** và tạo `WEBHOOK_SECRET` với một chuỗi ngẫu nhiên dài.
+4. Chạy hàm `setupSheet()` một lần và cấp quyền cho script.
+5. Chọn **Deploy → New deployment → Web app**; `Execute as: Me`, `Who has access: Anyone`.
+6. Sao chép URL kết thúc bằng `/exec`.
+7. Trong Vercel → Project → Settings → Environment Variables, thêm:
+
+```env
+GOOGLE_SHEETS_WEBHOOK_URL=https://script.google.com/macros/s/.../exec
+GOOGLE_SHEETS_WEBHOOK_SECRET=CHUOI_BI_MAT_GIONG_TRONG_SCRIPT_PROPERTIES
+```
+
+Tab `Registrations` sẽ chứa từng lượt đăng ký. Ô `N1` có nhãn **TỔNG SỐ NGƯỜI THAM GIA**, còn `N2` tự động đếm số Submission ID đã ghi. Script có lock và kiểm tra Submission ID để tránh webhook retry tạo dòng trùng.
