@@ -6,9 +6,9 @@ export const event = {
   organization: "ĐỘI SINH VIÊN TÌNH NGUYỆN ĐỒNG HƯƠNG BẮC NINH",
   tagline: "Mỗi người một thanh âm. Khi cùng bắt nhịp, chúng ta tạo nên một ngọn lửa rất riêng.",
   // Đổi ngày thật tại đây. ISO +07:00 để countdown chính xác giờ Việt Nam.
-  date: "2026-09-20T18:15:00+07:00",
-  dateLabel: "Chủ nhật, 20/09/2026",
-  timeLabel: "18:15 – 20:55",
+  date: "2026-09-15T18:00:00+07:00",
+  dateLabel: "Thứ Ba, 15/09/2026",
+  timeLabel: "18:00 – 20:55",
   location: "Hà Nội",
   address: "Địa điểm chính thức sẽ được BTC cập nhật sớm",
   mapsUrl: "https://maps.google.com",

@@ -78,7 +78,7 @@ function Opening({ onOpen }: { onOpen: () => void }) {
     <button className={`envelope ${opening ? "is-open" : ""}`} onClick={open} aria-label="Mở thiệp mời">
       <div className="letter"><span>WELCOME TO</span><strong>HÒA ÂM<br/><em>HỎA Ý</em></strong><small>BẮC NINH • 2026</small><div className="letter-wave"><i/><i/><i/><i/><i/></div></div>
       <div className="env-back"/><div className="env-paper"/><div className="env-left"/><div className="env-right"/><div className="env-flap"/>
-      <div className="seal bnc-seal" aria-label="BNC"><span className="bnc-mark">BNC</span><small>BẮC NINH</small></div>
+      <div className="seal bnc-seal" aria-label="Logo Đội SVTN Đồng hương Bắc Ninh"><img src="/assets/bnc-logo.jpeg" alt="Logo Đội SVTN Đồng hương Bắc Ninh" /></div>
     </button>
     <button className="open-hint" onClick={open}><Sparkles size={16}/> NHẤN ĐỂ MỞ THIỆP</button>
   </motion.div>;
@@ -131,7 +131,7 @@ export function HoaAmHoaYPage() {
           <span className="eyebrow">BẮC NINH ✦ TURN UP THE VOLUME</span><h1 className="hero-title"><span className="hero-title-line harmony-title">HÒA ÂM</span><span className="hero-title-line fire-title">HỎA Ý</span></h1><div className="hero-frequency" aria-hidden="true">{Array.from({length:22},(_,i)=><b key={i}/>)}</div><p>{event.organization}</p><blockquote>{event.tagline}</blockquote>
           <div className="hero-actions"><button className="btn primary" type="button" onClick={scrollToStory}>KHÁM PHÁ <ArrowDown size={18}/></button><a className="btn ghost" href="/dang-ky">ĐĂNG KÝ THAM GIA</a></div>
         </motion.div>
-        <div className="scrapbook" aria-hidden="true"><div className="vinyl-disc"><Music2/><span>HÒA ÂM</span></div><div className="polaroid p1"><div className="photo-placeholder"><UsersRound/></div><span>find your frequency ✦</span></div><div className="polaroid p2"><div className="photo-placeholder alt"><Camera/></div><span>spark the moment 🔥</span></div><div className="sticker star"><AudioLines/></div><div className="sticker heart"><Flame fill="currentColor"/></div><div className="floating-note note-a">♪</div><div className="floating-note note-b">♫</div></div>
+        <div className="scrapbook" aria-hidden="true"><div className="vinyl-disc"><Music2/><span>HÒA ÂM</span></div><div className="polaroid p1"><div className="photo-placeholder photo-real"><img src="/assets/hoa-am-card-1.jpeg" alt="Hoạt động của Đội SVTN Đồng hương Bắc Ninh" /></div><span>find your frequency ✦</span></div><div className="polaroid p2"><div className="photo-placeholder photo-real alt"><img src="/assets/hoa-am-card-2.jpeg" alt="Khoảnh khắc tập thể" /></div><span>spark the moment 🔥</span></div><div className="sticker star"><AudioLines/></div><div className="sticker heart"><Flame fill="currentColor"/></div><div className="floating-note note-a">♪</div><div className="floating-note note-b">♫</div></div>
       </section>
 
       <div className="marquee" aria-label="Hòa Âm Hỏa Ý · Bắc Ninh · Tuổi trẻ · Kết nối · Tình nguyện">
