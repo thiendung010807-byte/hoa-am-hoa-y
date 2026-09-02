@@ -4,13 +4,16 @@ import Script from "next/script";
 import confetti from "canvas-confetti";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, ChevronLeft, Sparkles } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { event, type Question } from "@/data/event";
 
 declare global {
   interface Window {
-    onTurnstileSuccess?: (token: string) => void;
-    onTurnstileExpired?: () => void;
+    turnstile?: {
+      render: (container: HTMLElement, options: Record<string, unknown>) => string;
+      remove: (widgetId: string) => void;
+      reset: (widgetId?: string) => void;
+    };
   }
 }
 
@@ -209,6 +212,9 @@ export function RegistrationExperience() {
   const [busy, setBusy] = useState(false);
   const [success, setSuccess] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileReady, setTurnstileReady] = useState(false);
+  const turnstileContainerRef = useRef<HTMLDivElement | null>(null);
+  const turnstileWidgetIdRef = useRef<string | null>(null);
   const [website, setWebsite] = useState("");
   const reduced = useReducedMotion();
   const q = questions[index];
@@ -242,13 +248,36 @@ export function RegistrationExperience() {
   }, []);
 
   useEffect(() => {
-    window.onTurnstileSuccess = setTurnstileToken;
-    window.onTurnstileExpired = () => setTurnstileToken("");
+    if (!siteKey || !isLast || !turnstileReady || !window.turnstile || !turnstileContainerRef.current) return;
+
+    // Explicit rendering is required because the Turnstile container only exists
+    // when the user reaches the final question. Implicit rendering would have
+    // already scanned the DOM before this element existed.
+    if (turnstileWidgetIdRef.current) {
+      window.turnstile.remove(turnstileWidgetIdRef.current);
+      turnstileWidgetIdRef.current = null;
+    }
+
+    setTurnstileToken("");
+    turnstileWidgetIdRef.current = window.turnstile.render(turnstileContainerRef.current, {
+      sitekey: siteKey,
+      theme: "light",
+      action: "register",
+      callback: (token: string) => setTurnstileToken(token),
+      "expired-callback": () => setTurnstileToken(""),
+      "error-callback": () => {
+        setTurnstileToken("");
+        setServerError("Không tải được xác minh chống bot. Vui lòng tải lại trang hoặc thử lại sau.");
+      },
+    });
+
     return () => {
-      delete window.onTurnstileSuccess;
-      delete window.onTurnstileExpired;
+      if (turnstileWidgetIdRef.current && window.turnstile) {
+        window.turnstile.remove(turnstileWidgetIdRef.current);
+        turnstileWidgetIdRef.current = null;
+      }
     };
-  }, []);
+  }, [siteKey, isLast, turnstileReady]);
 
   const answer = values[q.id];
   const displayIndex = String(index + 1).padStart(2, "0");
@@ -366,7 +395,7 @@ export function RegistrationExperience() {
 
   return (
     <main className="flow-page">
-      {siteKey && <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" />}
+      {siteKey && <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" strategy="afterInteractive" onLoad={() => setTurnstileReady(true)} />}
       <div className="flow-dots" aria-hidden="true" />
       <header className="flow-header">
         <a href="/" className="flow-home"><ChevronLeft size={18}/> HÒA ÂM HỎA Ý</a>
@@ -409,7 +438,7 @@ export function RegistrationExperience() {
               />
               {error && <motion.p className="flow-error" initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}>{error}</motion.p>}
               {serverError && <p className="flow-server-error">{serverError}</p>}
-              {isLast && siteKey && <div className="flow-turnstile"><div className="cf-turnstile" data-sitekey={siteKey} data-callback="onTurnstileSuccess" data-expired-callback="onTurnstileExpired" data-theme="light" data-action="register" /></div>}
+              {isLast && siteKey && <div className="flow-turnstile"><div ref={turnstileContainerRef} /></div>}
             </div>
 
             <div className="flow-actions">
