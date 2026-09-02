@@ -212,7 +212,6 @@ export function RegistrationExperience() {
   const [busy, setBusy] = useState(false);
   const [success, setSuccess] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
-  const [turnstileReady, setTurnstileReady] = useState(false);
   const turnstileContainerRef = useRef<HTMLDivElement | null>(null);
   const turnstileWidgetIdRef = useRef<string | null>(null);
   const [website, setWebsite] = useState("");
@@ -248,36 +247,82 @@ export function RegistrationExperience() {
   }, []);
 
   useEffect(() => {
-    if (!siteKey || !isLast || !turnstileReady || !window.turnstile || !turnstileContainerRef.current) return;
+    if (!siteKey || !isLast) return;
 
-    // Explicit rendering is required because the Turnstile container only exists
-    // when the user reaches the final question. Implicit rendering would have
-    // already scanned the DOM before this element existed.
-    if (turnstileWidgetIdRef.current) {
-      window.turnstile.remove(turnstileWidgetIdRef.current);
-      turnstileWidgetIdRef.current = null;
-    }
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    let attempts = 0;
 
-    setTurnstileToken("");
-    turnstileWidgetIdRef.current = window.turnstile.render(turnstileContainerRef.current, {
-      sitekey: siteKey,
-      theme: "light",
-      action: "register",
-      callback: (token: string) => setTurnstileToken(token),
-      "expired-callback": () => setTurnstileToken(""),
-      "error-callback": () => {
+    const mountTurnstile = () => {
+      if (cancelled) return;
+
+      const api = window.turnstile;
+      const container = turnstileContainerRef.current;
+
+      if (!api || !container) {
+        attempts += 1;
+        if (attempts <= 40) {
+          timer = setTimeout(mountTurnstile, 125);
+        } else {
+          setServerError("Không thể khởi tạo xác minh chống bot. Vui lòng tải lại trang.");
+        }
+        return;
+      }
+
+      try {
+        if (turnstileWidgetIdRef.current) {
+          api.remove(turnstileWidgetIdRef.current);
+          turnstileWidgetIdRef.current = null;
+        }
+
+        container.innerHTML = "";
         setTurnstileToken("");
-        setServerError("Không tải được xác minh chống bot. Vui lòng tải lại trang hoặc thử lại sau.");
-      },
-    });
+
+        requestAnimationFrame(() => {
+          if (cancelled || !turnstileContainerRef.current || !window.turnstile) return;
+
+          try {
+            turnstileWidgetIdRef.current = window.turnstile.render(turnstileContainerRef.current, {
+              sitekey: siteKey,
+              theme: "light",
+              action: "register",
+              callback: (token: string) => {
+                setTurnstileToken(token);
+                setServerError("");
+              },
+              "expired-callback": () => setTurnstileToken(""),
+              "timeout-callback": () => setTurnstileToken(""),
+              "error-callback": () => {
+                setTurnstileToken("");
+                setServerError("Không tải được xác minh chống bot. Vui lòng tải lại trang hoặc thử lại sau.");
+              },
+            });
+          } catch {
+            attempts += 1;
+            if (attempts <= 8 && !cancelled) {
+              timer = setTimeout(mountTurnstile, 250);
+            } else {
+              setServerError("Không thể hiển thị xác minh chống bot. Vui lòng tải lại trang.");
+            }
+          }
+        });
+      } catch {
+        attempts += 1;
+        if (attempts <= 8) timer = setTimeout(mountTurnstile, 250);
+      }
+    };
+
+    mountTurnstile();
 
     return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
       if (turnstileWidgetIdRef.current && window.turnstile) {
-        window.turnstile.remove(turnstileWidgetIdRef.current);
+        try { window.turnstile.remove(turnstileWidgetIdRef.current); } catch {}
         turnstileWidgetIdRef.current = null;
       }
     };
-  }, [siteKey, isLast, turnstileReady]);
+  }, [siteKey, isLast]);
 
   const answer = values[q.id];
   const displayIndex = String(index + 1).padStart(2, "0");
@@ -395,7 +440,7 @@ export function RegistrationExperience() {
 
   return (
     <main className="flow-page">
-      {siteKey && <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" strategy="afterInteractive" onLoad={() => setTurnstileReady(true)} />}
+      {siteKey && <Script id="cf-turnstile-api" src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" strategy="afterInteractive" />}
       <div className="flow-dots" aria-hidden="true" />
       <header className="flow-header">
         <a href="/" className="flow-home"><ChevronLeft size={18}/> HÒA ÂM HỎA Ý</a>
