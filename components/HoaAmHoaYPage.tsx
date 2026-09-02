@@ -78,7 +78,7 @@ function Opening({ onOpen }: { onOpen: () => void }) {
     <button className={`envelope ${opening ? "is-open" : ""}`} onClick={open} aria-label="Mở thiệp mời">
       <div className="letter"><span>WELCOME TO</span><strong>HÒA ÂM<br/><em>HỎA Ý</em></strong><small>BẮC NINH • 2026</small><div className="letter-wave"><i/><i/><i/><i/><i/></div></div>
       <div className="env-back"/><div className="env-paper"/><div className="env-left"/><div className="env-right"/><div className="env-flap"/>
-      <div className="seal"><Flame size={24} fill="currentColor"/><small>HỎA Ý</small></div>
+      <div className="seal bnc-seal" aria-label="BNC"><span className="bnc-mark">BNC</span><small>BẮC NINH</small></div>
     </button>
     <button className="open-hint" onClick={open}><Sparkles size={16}/> NHẤN ĐỂ MỞ THIỆP</button>
   </motion.div>;
