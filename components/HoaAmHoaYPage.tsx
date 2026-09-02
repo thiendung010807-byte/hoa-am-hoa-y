@@ -12,7 +12,7 @@ const typingPhrases = [
   "nơi mỗi người mang một thanh âm riêng.",
   "nơi những nhịp trẻ hòa thành một giai điệu chung.",
   "nơi ý tưởng bắt lửa và truyền lửa cho nhau.",
-  "nơi Hòa Âm gặp Hỏa Ý."
+  "nơi Hòa Âm gặp gỡ Hỏa Ý."
 ];
 
 function graphemes(text: string) {
