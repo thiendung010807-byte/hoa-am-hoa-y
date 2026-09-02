@@ -405,7 +405,7 @@ export function RegistrationExperience() {
               />
               {error && <motion.p className="flow-error" initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}>{error}</motion.p>}
               {serverError && <p className="flow-server-error">{serverError}</p>}
-              {isLast && siteKey && <div className="flow-turnstile"><div className="cf-turnstile" data-sitekey={siteKey} data-callback="onTurnstileSuccess" data-expired-callback="onTurnstileExpired" data-theme="light" /></div>}
+              {isLast && siteKey && <div className="flow-turnstile"><div className="cf-turnstile" data-sitekey={siteKey} data-callback="onTurnstileSuccess" data-expired-callback="onTurnstileExpired" data-theme="light" data-action="register" /></div>}
             </div>
 
             <div className="flow-actions">

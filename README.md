@@ -1,210 +1,144 @@
-# Hòa Âm Hỏa Ý – Đội SVTN Đồng Hương Bắc Ninh
+# Hòa Âm Hỏa Ý — Google Sheets only
 
-Website **Interactive Invitation + Event Landing Page + Registration Form**, tối ưu để deploy trên **Vercel**. Backend ghi đăng ký vào **Supabase Postgres** (nguồn dữ liệu chính) và có thể **mirror sang Google Sheets**.
+Kiến trúc production:
 
-## Có gì trong project
+`Browser → Next.js /api/register (Vercel) → Google Apps Script Web App → Google Sheet`
 
-- Màn mở đầu phong thư + dấu sáp + icon rain + animation mở thiệp + confetti.
-- Hero, marquee, storytelling, typing/delete Unicode-safe bằng `Intl.Segmenter`.
-- Countdown realtime, mini calendar, event cards, dresscode, timeline, Google Maps embed.
-- Form 3 bước, progress, validation, radio/checkbox/select/yes-no/rating/scale/other answer.
-- Success fullscreen + confetti.
-- Responsive mobile-first + `prefers-reduced-motion`.
-- Next.js Route Handler; **browser không có quyền ghi trực tiếp Supabase**.
-- Supabase RLS, unique email/phone, rate limit server-side, hashed IP, honeypot, Cloudflare Turnstile, origin check, body-size guard.
-- CSP + HSTS + anti-clickjacking + nosniff + Permissions Policy.
-- Optional Google Sheets mirror sau khi Supabase ghi thành công.
+Supabase đã được loại bỏ hoàn toàn. Browser không biết URL Apps Script, webhook secret hay IP hash salt.
 
-> Không hệ thống web nào có thể cam kết “chống hack 100%”. Project này dùng defense-in-depth và secure-by-default; vẫn cần cập nhật dependency, giữ secret an toàn và theo dõi log khi chạy production.
+## 1. Google Sheet
 
-## 1. Cài đặt local
+Tạo một Google Sheet mới (hoặc dùng sheet hiện tại), sau đó mở **Extensions → Apps Script**.
 
-Yêu cầu Node.js 22+.
-
-```bash
-npm install
-cp .env.example .env.local
-npm run dev
-```
-
-Mở `http://localhost:3000`.
-
-## 2. Cấu hình nội dung sự kiện
-
-Sửa `data/event.ts`:
-
-- `date`: ISO datetime kèm `+07:00`.
-- `dateLabel`, `timeLabel`.
-- `location`, `address`, `mapsUrl`, `mapsEmbedUrl`.
-- `dressCode`, `timeline`, `questions`.
-- `musicUrl`: URL MP3 HTTPS. Để `""` nếu chưa dùng nhạc.
-
-Không tách từng ký tự tiếng Việt bằng `split("")`; component typing hiện tại dùng `Intl.Segmenter` để giữ grapheme/dấu tiếng Việt đúng.
-
-## 3. Tạo Supabase
-
-Tạo project Supabase → SQL Editor → chạy toàn bộ file:
+Dán toàn bộ file:
 
 ```text
-supabase/schema.sql
+google-sheets/google-apps-script.gs
 ```
 
-Sau đó vào **Project Settings / API** lấy:
+Trong **Apps Script → Project Settings → Script Properties**, thêm:
 
-- Project URL → `SUPABASE_URL`
-- Service Role Key → `SUPABASE_SERVICE_ROLE_KEY`
-
-**Service Role Key tuyệt đối không được đặt tên `NEXT_PUBLIC_*`, không commit Git, không dùng ở Client Component.**
-
-### Vì sao bảng không có public policy?
-
-`registrations` chứa PII (họ tên, phone, email). RLS được bật và `anon`/`authenticated` bị revoke. Chỉ API server-side sử dụng service role mới được ghi/đọc.
-
-## 4. Chống bot bằng Cloudflare Turnstile
-
-Tạo Turnstile widget cho domain production và localhost (nếu cần test), sau đó thêm:
-
-```env
-NEXT_PUBLIC_TURNSTILE_SITE_KEY=...
-TURNSTILE_SECRET_KEY=...
+```text
+WEBHOOK_SECRET=<chuỗi ngẫu nhiên dài ít nhất 32 ký tự>
 ```
 
-Ở production, nếu không có secret Turnstile, API được thiết kế **fail-closed** và từ chối submit thay vì âm thầm bỏ bảo vệ.
+Chạy thủ công hàm `setupSheet()` một lần và cấp quyền. Script sẽ tạo tab `Đăng ký` với các cột:
 
-## 5. Google Sheets mirror (optional)
+- Thời gian đăng ký (giờ Việt Nam)
+- Họ và tên
+- SĐT
+- Email
+- Trường
+- MSV NEU
+- Trường khác
+- Link Facebook
+- Lớp chuyên ngành
+- Kĩ năng / Biệt tài / Sở thích
+- Đăng ký văn nghệ
+- Chi tiết tiết mục
+- Lời nhắn / Thắc mắc
 
-Supabase là nguồn chính để chống duplicate/rate limit ổn định. Nếu BTC vẫn cần Sheet:
+Ô `O1/O2` hiển thị tổng số người tham gia. Không có Submission ID, IP, IP hash hay User-Agent trong Sheet.
 
-1. Tạo Google Sheet.
-2. Extensions → Apps Script.
-3. Paste `supabase/google-apps-script.gs`.
-4. Project Settings → Script Properties → tạo `WEBHOOK_SECRET` là chuỗi random dài.
-5. Deploy → New deployment → Web app → Execute as **Me** → access **Anyone**.
-6. Copy Web App URL vào Vercel env `GOOGLE_SHEETS_WEBHOOK_URL`.
-7. Dùng đúng secret ở `GOOGLE_SHEETS_WEBHOOK_SECRET`.
+Sau đó **Deploy → New deployment → Web app**:
 
-Secret chỉ được nối vào request **ở server**, không xuất hiện trong browser bundle.
+- Execute as: **Me**
+- Who has access: **Anyone**
 
-## 6. Environment variables
+Copy URL kết thúc bằng `/exec`.
 
-```env
-NEXT_PUBLIC_SITE_URL=https://your-domain.vercel.app
+Mỗi lần sửa Apps Script: **Deploy → Manage deployments → Edit → New version → Deploy**.
+
+## 2. Cloudflare Turnstile
+
+Tạo Turnstile widget tại Cloudflare và thêm domain production. Lấy:
+
+- Site key
+- Secret key
+
+Production được cấu hình fail-closed: nếu thiếu `TURNSTILE_SECRET_KEY`, API đăng ký sẽ từ chối submit thay vì tự bỏ CAPTCHA.
+
+## 3. Vercel Environment Variables
+
+Trong Vercel → Project → Settings → Environment Variables:
+
+```text
+NEXT_PUBLIC_SITE_URL=https://TEN-MIEN-CUA-BAN
 NEXT_PUBLIC_TURNSTILE_SITE_KEY=...
-SUPABASE_URL=https://xxx.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=...
 TURNSTILE_SECRET_KEY=...
-IP_HASH_SALT=<random-64-char-secret>
 GOOGLE_SHEETS_WEBHOOK_URL=https://script.google.com/macros/s/.../exec
-GOOGLE_SHEETS_WEBHOOK_SECRET=<random-secret>
+GOOGLE_SHEETS_WEBHOOK_SECRET=<giống WEBHOOK_SECRET trong Apps Script>
+IP_HASH_SALT=<chuỗi random khác, ít nhất 32 bytes>
 ```
 
-Tạo secret nhanh:
+`GOOGLE_SHEETS_WEBHOOK_SECRET`, `TURNSTILE_SECRET_KEY`, `IP_HASH_SALT` tuyệt đối không được có tiền tố `NEXT_PUBLIC_`.
+
+Có thể tạo secret bằng:
 
 ```bash
 openssl rand -hex 32
 ```
 
-## 7. Deploy Vercel
+Tạo hai chuỗi khác nhau cho webhook secret và IP salt.
 
-### Cách UI
-
-1. Push folder này lên GitHub.
-2. Vercel → Add New → Project → Import repository.
-3. Framework tự nhận Next.js.
-4. Add toàn bộ env ở mục **Environment Variables**.
-5. Deploy.
-6. Sau deploy, đổi `NEXT_PUBLIC_SITE_URL` thành domain thật rồi Redeploy.
-7. Trong Cloudflare Turnstile, thêm domain Vercel/custom domain vào allowed hostnames.
-
-### Cách CLI
+## 4. Deploy
 
 ```bash
-npm i -g vercel
-vercel login
-vercel
-vercel --prod
+npm install
+npm run build
+git add .
+git commit -m "Switch registration to secure Google Sheets only"
+git push
 ```
 
-## 8. Security checklist trước khi public
+Vercel sẽ tự deploy lại.
 
-- [ ] Không commit `.env.local` / service role key.
-- [ ] Supabase RLS đang bật; không tạo policy public cho `registrations`.
-- [ ] Turnstile site key + secret đã cấu hình production.
-- [ ] `NEXT_PUBLIC_SITE_URL` đúng origin production.
-- [ ] `IP_HASH_SALT` random mạnh.
-- [ ] Test duplicate email/phone trả HTTP 409.
-- [ ] Test >5 request/10 phút cùng IP trả HTTP 429.
-- [ ] Test request không có Turnstile production trả HTTP 403.
-- [ ] Test request cross-origin bị chặn.
-- [ ] Security headers hiện trên response production.
-- [ ] Bật MFA cho Vercel, Supabase, Google account.
-- [ ] Chỉ cấp quyền project cho người cần thiết.
-- [ ] Bật dependency/security alerts trên GitHub.
-- [ ] Không ghi full phone/email vào application logs.
+## 5. Bảo mật đã có trong source
 
-## 9. Kiểm tra flow
+- Không có Supabase key/dependency/code.
+- Apps Script URL + webhook secret chỉ tồn tại server-side.
+- Strict production Origin check.
+- `Sec-Fetch-Site` check.
+- Chỉ chấp nhận `application/json`.
+- Body được đọc thành text và giới hạn 20 KB kể cả request chunked.
+- Zod validation ở Next.js server.
+- Validate lần hai trong Apps Script.
+- Honeypot field chống bot cơ bản.
+- Cloudflare Turnstile, production fail-closed.
+- Turnstile `action=register` và hostname check ở production.
+- Rate limit 5 lần / 10 phút / HMAC(IP) bằng Apps Script CacheService.
+- Raw IP và IP hash không ghi vào Google Sheet.
+- Duplicate check theo SĐT hoặc email dưới `LockService`, giảm race condition khi submit đồng thời.
+- Spreadsheet formula injection protection cho chuỗi bắt đầu bằng `=`, `+`, `-`, `@`.
+- Google Sheet lưu thời gian bằng `Asia/Ho_Chi_Minh`.
+- Security headers: CSP, HSTS, frame deny, nosniff, Permissions-Policy, COOP/CORP.
+- Không trả stack trace / lỗi nội bộ cho browser.
+- API responses `no-store`.
 
-1. Vào trang → phong thư đóng.
-2. Click → seal/flap/letter animation + confetti.
-3. Scroll toàn bộ landing page.
-4. Countdown dùng `event.date`.
-5. Map mở đúng địa điểm.
-6. Form không cho next khi trường bắt buộc thiếu.
-7. Submit → Turnstile → rate limit → Supabase insert.
-8. Submit trùng email/phone → thông báo đã đăng ký.
-9. Nếu có Sheets webhook → row xuất hiện trong tab `Registrations`.
-10. Thành công → success fullscreen + confetti.
+## 6. Checklist production rất quan trọng
 
-## 10. Cấu trúc chính
+1. Bật MFA/2FA cho Google, GitHub và Vercel.
+2. Không commit `.env.local` hoặc secret vào GitHub.
+3. Không gửi URL Apps Script kèm secret cho người khác. Bản này không đặt secret trên URL.
+4. Chỉ chia sẻ Google Sheet cho tài khoản BTC thật sự cần truy cập; người xem chỉ Viewer nếu không cần sửa.
+5. Trong Google Account kiểm tra định kỳ **Security → Your connections / Third-party access**.
+6. Trong Vercel chỉ cấp quyền project cho thành viên cần thiết.
+7. Turnstile phải whitelist đúng domain production.
+8. Sau khi đổi secret, redeploy Apps Script/Vercel nếu cần và test lại form.
+9. Không thêm HTML người dùng nhập bằng `dangerouslySetInnerHTML` ở frontend/admin sau này.
+10. Nếu sau này cần quy mô lớn, audit log, admin nhiều quyền hoặc hàng nghìn submit đồng thời, nên quay lại database/backend chuyên dụng thay vì mở rộng Apps Script.
 
-```text
-app/
-  api/register/route.ts
-  globals.css
-  layout.tsx
-  page.tsx
-components/
-  HoaAmHoaYPage.tsx
-data/event.ts
-lib/
-  googleSheets.ts
-  security.ts
-  supabase.ts
-  validation.ts
-supabase/
-  schema.sql
-  google-apps-script.gs
-next.config.ts
-vercel.json
-```
+## 7. Test sau deploy
 
-## Ghi chú production
+- Submit bình thường → xuất hiện đúng một dòng trong Sheet.
+- Timestamp phải là giờ Việt Nam.
+- Chọn NEU → cột MSV NEU có dữ liệu.
+- Chọn Trường khác → cột Trường khác có dữ liệu.
+- Chọn Có văn nghệ → Chi tiết tiết mục có dữ liệu.
+- Gửi lại cùng email/SĐT → web báo đã đăng ký.
+- Tắt/xóa Turnstile secret ở production để kiểm thử cấu hình → submit phải bị từ chối (sau đó khôi phục ngay).
+- Nhập thử `=1+1` vào lời nhắn → Sheet phải hiển thị như text, không chạy công thức.
 
-- Google Apps Script mirror là tiện ích cho BTC; dữ liệu chuẩn vẫn nên lấy từ Supabase.
-- Nếu traffic lớn, thay rate-limit table bằng Redis/KV chuyên dụng và thêm WAF/bot rules ở CDN.
-- Nếu làm `/admin`, nên dùng Supabase Auth + allowlist email/role, route server-side và audit log; **không bao giờ** cho admin key xuống client.
+## Giới hạn cần hiểu
 
-
-## Trang đăng ký riêng
-
-Form đăng ký nằm tại `/dang-ky`, mỗi câu hỏi hiển thị theo dạng full-screen onboarding một câu/màn hình. CTA trên trang chính dẫn sang route này.
-
-
-## Google Sheets mirror + tổng số người tham gia
-
-Mỗi đăng ký được lưu vào Supabase trước. Sau khi Supabase xác nhận thành công, server sẽ mirror dữ liệu sang Google Sheets qua Apps Script. Google Sheets không quyết định việc đăng ký có thành công hay không, vì vậy lỗi Sheets tạm thời sẽ không làm mất đăng ký trong Supabase.
-
-1. Tạo một Google Sheet mới.
-2. Vào **Extensions → Apps Script** và dán toàn bộ file `supabase/google-apps-script.gs`.
-3. Vào **Project Settings → Script Properties** và tạo `WEBHOOK_SECRET` với một chuỗi ngẫu nhiên dài.
-4. Chạy hàm `setupSheet()` một lần và cấp quyền cho script.
-5. Chọn **Deploy → New deployment → Web app**; `Execute as: Me`, `Who has access: Anyone`.
-6. Sao chép URL kết thúc bằng `/exec`.
-7. Trong Vercel → Project → Settings → Environment Variables, thêm:
-
-```env
-GOOGLE_SHEETS_WEBHOOK_URL=https://script.google.com/macros/s/.../exec
-GOOGLE_SHEETS_WEBHOOK_SECRET=CHUOI_BI_MAT_GIONG_TRONG_SCRIPT_PROPERTIES
-```
-
-Tab `Registrations` sẽ chứa từng lượt đăng ký. Ô `N1` có nhãn **TỔNG SỐ NGƯỜI THAM GIA**, còn `N2` tự động đếm số Submission ID đã ghi. Script có lock và kiểm tra Submission ID để tránh webhook retry tạo dòng trùng.
+Không website công khai nào có thể bảo đảm “không bị hack 100%”. Google Apps Script + Sheets phù hợp với form sự kiện nhỏ/vừa, nhưng rate-limit dựa trên CacheService là lớp giảm abuse chứ không phải WAF cấp doanh nghiệp. Turnstile + origin validation + server-only secret là các lớp bảo vệ quan trọng nhất trong kiến trúc này.
