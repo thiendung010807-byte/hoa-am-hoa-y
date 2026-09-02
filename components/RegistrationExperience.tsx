@@ -298,7 +298,11 @@ export function RegistrationExperience() {
   };
 
   const submit = async () => {
-    if (!validateCurrent() || busy || (!!siteKey && !turnstileToken)) return;
+    if (!validateCurrent() || busy) return;
+    if (siteKey && !turnstileToken) {
+      setServerError("Vui lòng hoàn tất xác minh chống bot trước khi gửi đăng ký ✦");
+      return;
+    }
     setBusy(true);
     setServerError("");
     try {
@@ -413,7 +417,7 @@ export function RegistrationExperience() {
               {!isLast ? (
                 <button type="button" className="flow-primary" onClick={goNext}>TIẾP TỤC <ArrowRight size={18}/></button>
               ) : (
-                <button type="button" className="flow-primary" onClick={submit} disabled={busy || (!!siteKey && !turnstileToken)}>{busy ? "ĐANG GỬI…" : "GỬI ĐĂNG KÝ ✦"}</button>
+                <button type="button" className="flow-primary" onClick={submit} disabled={busy}>{busy ? "ĐANG GỬI…" : "GỬI ĐĂNG KÝ ✦"}</button>
               )}
             </div>
           </motion.div>
