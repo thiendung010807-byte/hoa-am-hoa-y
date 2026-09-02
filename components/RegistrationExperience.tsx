@@ -24,11 +24,15 @@ function QuestionControl({
   value,
   onChange,
   onQuickNext,
+  allValues,
+  onExtraChange,
 }: {
   q: Question;
   value: unknown;
   onChange: (value: unknown) => void;
   onQuickNext: () => void;
+  allValues: Record<string, unknown>;
+  onExtraChange: (key: string, value: string) => void;
 }) {
   const val = typeof value === "string" ? value : "";
 
@@ -106,6 +110,24 @@ function QuestionControl({
             placeholder="Nhập câu trả lời của bạn"
           />
         )}
+        {q.id === "school" && val === "NEU" && (
+          <div className="flow-followup">
+            <span>MSV của em</span>
+            <input className="flow-input" value={String(allValues.studentId || "")} onChange={(e) => onExtraChange("studentId", e.target.value)} placeholder="Nhập mã sinh viên" />
+          </div>
+        )}
+        {q.id === "school" && val === "Trường khác" && (
+          <div className="flow-followup">
+            <span>Tên trường của em</span>
+            <input className="flow-input" value={String(allValues.otherSchool || "")} onChange={(e) => onExtraChange("otherSchool", e.target.value)} placeholder="Nhập tên trường" />
+          </div>
+        )}
+        {q.id === "performance" && val === "Có" && (
+          <div className="flow-followup">
+            <span>Cho chúng mình biết thêm về tiết mục</span>
+            <textarea className="flow-input flow-textarea" rows={3} value={String(allValues.performanceDetails || "")} onChange={(e) => onExtraChange("performanceDetails", e.target.value)} placeholder="Tên bài, hình thức biểu diễn và những mong muốn khác nếu có (hát cùng anh chị/bạn nào đó,...)" />
+          </div>
+        )}
       </>
     );
   }
@@ -159,7 +181,7 @@ function QuestionControl({
 }
 
 
-const checkpointEmojis = ["🧑‍💻", "📞", "💌", "🎓", "📅", "📣", "💬", "👀", "🚀"];
+const checkpointEmojis = ["🪪", "📞", "💌", "🎓", "🔗", "📚", "🎸", "🎤", "💬"];
 const CHECKPOINT_SPACING = 190;
 const CHECKPOINT_EDGE_PADDING = 3200;
 const CHECKPOINT_START_X = CHECKPOINT_EDGE_PADDING + 170;
@@ -198,6 +220,28 @@ export function RegistrationExperience() {
   const activeCheckpointX = CHECKPOINT_START_X + index * CHECKPOINT_SPACING;
 
   useEffect(() => {
+    let startX = 0;
+    let startY = 0;
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 1) return;
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      if (event.touches.length !== 1) return;
+      const dx = event.touches[0].clientX - startX;
+      const dy = event.touches[0].clientY - startY;
+      if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.15) event.preventDefault();
+    };
+    document.addEventListener("touchstart", onTouchStart, { passive: true });
+    document.addEventListener("touchmove", onTouchMove, { passive: false });
+    return () => {
+      document.removeEventListener("touchstart", onTouchStart);
+      document.removeEventListener("touchmove", onTouchMove);
+    };
+  }, []);
+
+  useEffect(() => {
     window.onTurnstileSuccess = setTurnstileToken;
     window.onTurnstileExpired = () => setTurnstileToken("");
     return () => {
@@ -223,6 +267,18 @@ export function RegistrationExperience() {
       setError("Số điện thoại chưa hợp lệ.");
       return false;
     }
+    if (q.id === "school" && answer === "NEU" && isEmpty(values.studentId)) {
+      setError("Em điền thêm MSV nhé ✦");
+      return false;
+    }
+    if (q.id === "school" && answer === "Trường khác" && isEmpty(values.otherSchool)) {
+      setError("Em điền tên trường nhé ✦");
+      return false;
+    }
+    if (q.id === "performance" && answer === "Có" && isEmpty(values.performanceDetails)) {
+      setError("Em cho chúng mình biết thêm về tiết mục nhé ✦");
+      return false;
+    }
     setError("");
     return true;
   };
@@ -246,7 +302,24 @@ export function RegistrationExperience() {
     setBusy(true);
     setServerError("");
     try {
-      const payload = { ...values, turnstileToken, website, extraAnswers: {} };
+      const payload = {
+        fullName: values.fullName,
+        phone: values.phone,
+        email: values.email,
+        school: values.school,
+        facebook: values.facebook,
+        classMajor: values.classMajor,
+        skills: values.skills,
+        performance: values.performance,
+        note: values.note || "",
+        turnstileToken,
+        website,
+        extraAnswers: {
+          studentId: values.studentId || "",
+          otherSchool: values.otherSchool || "",
+          performanceDetails: values.performanceDetails || "",
+        },
+      };
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -323,6 +396,12 @@ export function RegistrationExperience() {
                   setServerError("");
                 }}
                 onQuickNext={goNext}
+                allValues={values}
+                onExtraChange={(key, value) => {
+                  setValues((current) => ({ ...current, [key]: value }));
+                  setError("");
+                  setServerError("");
+                }}
               />
               {error && <motion.p className="flow-error" initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}>{error}</motion.p>}
               {serverError && <p className="flow-server-error">{serverError}</p>}

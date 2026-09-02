@@ -94,6 +94,26 @@ export function HoaAmHoaYPage() {
     if (window.location.hash) {
       window.history.replaceState(null, "", window.location.pathname + window.location.search);
     }
+
+    let startX = 0;
+    let startY = 0;
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 1) return;
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      if (event.touches.length !== 1) return;
+      const dx = event.touches[0].clientX - startX;
+      const dy = event.touches[0].clientY - startY;
+      if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.15) event.preventDefault();
+    };
+    document.addEventListener("touchstart", onTouchStart, { passive: true });
+    document.addEventListener("touchmove", onTouchMove, { passive: false });
+    return () => {
+      document.removeEventListener("touchstart", onTouchStart);
+      document.removeEventListener("touchmove", onTouchMove);
+    };
   }, []);
 
   const toggleMusic = async () => { const a = audioRef.current; if (!a) return; if (a.paused) { try { await a.play(); setMusic(true); } catch {} } else { a.pause(); setMusic(false); } };
@@ -156,10 +176,10 @@ export function HoaAmHoaYPage() {
       <section className="count-section section"><span className="eyebrow light">CHÚNG TA SẼ GẶP NHAU SAU</span><Countdown/><div className="calendar-info"><MiniCalendar/><div className="event-card"><span className="tape">HÒA ÂM HỎA Ý PASS</span><div><CalendarDays/><p><small>NGÀY</small><b>{event.dateLabel}</b></p></div><div><Clock3/><p><small>THỜI GIAN</small><b>{event.timeLabel}</b></p></div><div><MapPin/><p><small>ĐỊA ĐIỂM</small><b>{event.location}</b></p></div><div><Sparkles/><p><small>CHẤT RIÊNG</small><b>Mang theo phiên bản thật nhất của bạn</b></p></div><div><Backpack/><p><small>MANG THEO</small><b>{event.bring}</b></p></div><div><UsersRound/><p><small>ĐỐI TƯỢNG</small><b>{event.audience}</b></p></div></div></div></section>
 
       <section className="frequency-lab section">
-        <div className="frequency-copy"><span className="eyebrow">TRẠM HÒA TẦN SỐ</span><h2>Đến đây với<br/><i>chất riêng.</i></h2><p>Không có dress code. Không có khuôn mẫu. Chỉ cần mang theo một câu chuyện, một bài hát bạn thích và năng lượng sẵn sàng bắt nhịp.</p><div className="frequency-tags"><span>01 · MỘT CÂU CHUYỆN</span><span>02 · MỘT GIAI ĐIỆU</span><span>03 · 100% CHẤT RIÊNG</span></div></div>
+        <div className="frequency-copy"><span className="eyebrow">TRẠM HÒA TẦN SỐ</span><h2>Đến đây với<br/><i>chất riêng.</i></h2><p>Mang theo một câu chuyện, một giai điệu bạn thích và năng lượng sẵn sàng bắt nhịp. Mỗi cá tính là một tần số riêng — gặp nhau để Hòa Âm, chạm nhau để Hỏa Ý.</p><div className="frequency-tags"><span>01 · MỘT CÂU CHUYỆN</span><span>02 · MỘT GIAI ĐIỆU</span><span>03 · 100% CHẤT RIÊNG</span></div></div>
         <div className="frequency-stage" aria-hidden="true">
-          <div className="orbit orbit-one"><i>ÂM</i><i>Ý</i></div><div className="orbit orbit-two"><i>NHỊP</i><i>LỬA</i></div>
-          <div className="frequency-core"><div className="core-wave">{Array.from({length:9},(_,i)=><b key={i}/>)}</div><Flame fill="currentColor"/><strong>HÒA × HỎA</strong></div>
+          <div className="orbit orbit-one"><i>HÒA</i><i>ÂM</i></div><div className="orbit orbit-two"><i>HỎA</i><i>Ý</i></div>
+          <div className="frequency-core"><div className="core-wave">{Array.from({length:9},(_,i)=><b key={i}/>)}</div><Flame fill="currentColor"/></div>
           <span className="satellite s1">♪</span><span className="satellite s2">✦</span><span className="satellite s3">♫</span>
         </div>
       </section>

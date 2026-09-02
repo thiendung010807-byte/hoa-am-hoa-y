@@ -29,14 +29,14 @@ export const event = {
     ["21:00", "SEE YOU AGAIN 💙", "Hẹn nhau ở những hành trình tiếp theo."],
   ],
   questions: [
-    { id: "fullName", label: "Bạn tên là gì?", type: "text", required: true, placeholder: "Nguyễn Văn A", step: 1 },
-    { id: "phone", label: "Số điện thoại", type: "tel", required: true, placeholder: "09xxxxxxxx", step: 1 },
-    { id: "email", label: "Email", type: "email", required: true, placeholder: "ban@example.com", step: 1 },
-    { id: "school", label: "Bạn đang học/làm việc ở đâu?", type: "text", required: true, placeholder: "Tên trường / đơn vị", step: 1 },
-    { id: "year", label: "Bạn đang là sinh viên năm mấy?", type: "radio", required: true, options: ["Năm 1", "Năm 2", "Năm 3", "Năm 4", "Khác"], allowOther: true, step: 2 },
-    { id: "source", label: "Bạn biết Hòa Âm Hỏa Ý qua đâu?", type: "radio", required: true, options: ["Facebook", "Bạn bè", "TikTok", "Group trường", "Khác"], allowOther: true, step: 2 },
-    { id: "expectation", label: "Bạn mong chờ điều gì nhất ở Hòa Âm Hỏa Ý?", type: "textarea", required: true, placeholder: "Kể chúng mình nghe một chút nhé...", step: 2 },
-    { id: "joinFuture", label: "Bạn có muốn nhận thông tin các hoạt động tiếp theo của Đội không?", type: "yesno", required: true, step: 3 },
-    { id: "note", label: "Có điều gì bạn muốn nhắn với BTC không?", type: "textarea", placeholder: "Không bắt buộc đâu nha 💙", step: 3 }
+    { id: "fullName", label: "Họ và tên?", type: "text", required: true, placeholder: "Nguyễn Văn A", step: 1 },
+    { id: "phone", label: "SĐT?", type: "tel", required: true, placeholder: "09xxxxxxxx", step: 1 },
+    { id: "email", label: "Email?", type: "email", required: true, placeholder: "ban@example.com", step: 1 },
+    { id: "school", label: "Em đang học ở đâu?", description: "Chọn một trường. Nếu là NEU, điền thêm MSV; nếu chọn Trường khác, ghi tên trường của em.", type: "radio", required: true, options: ["NEU", "HUST", "HUCE", "Trường khác"], step: 1 },
+    { id: "facebook", label: "Link Facebook cá nhân?", type: "text", required: true, placeholder: "https://facebook.com/...", step: 1 },
+    { id: "classMajor", label: "Lớp chuyên ngành?", type: "text", required: true, placeholder: "VD: K66 Kinh tế / IT1-02...", step: 2 },
+    { id: "skills", label: "Em có kĩ năng, biệt tài hay sở thích gì không?", description: "VD: Biết chơi nhạc cụ, hát, nhảy,...", type: "textarea", required: true, placeholder: "Kể chúng mình nghe nhé...", step: 2 },
+    { id: "performance", label: "Em có muốn đóng góp một tiết mục văn nghệ cho chương trình không?", type: "radio", required: true, options: ["Có", "Không"], step: 2 },
+    { id: "note", label: "Em có điều gì thắc mắc hoặc muốn nhắn gửi tới anh chị không?", description: "Không bắt buộc", type: "textarea", placeholder: "Nhắn chúng mình bất cứ điều gì em muốn nhé 💙", step: 3 }
   ] as Question[]
 };

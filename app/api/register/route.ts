@@ -40,11 +40,13 @@ export async function POST(req: NextRequest) {
       full_name: parsed.data.fullName,
       phone: normalizePhone(parsed.data.phone),
       email: parsed.data.email.toLowerCase(),
-      school: parsed.data.school,
-      year: parsed.data.year,
-      source: parsed.data.source,
-      expectation: parsed.data.expectation,
-      join_future: parsed.data.joinFuture,
+      school: parsed.data.school === "Trường khác"
+        ? `Trường khác: ${String(parsed.data.extraAnswers.otherSchool || "").trim()}`
+        : parsed.data.school,
+      year: parsed.data.classMajor,
+      source: parsed.data.facebook,
+      expectation: parsed.data.skills,
+      join_future: parsed.data.performance,
       note: parsed.data.note,
       extra_answers: parsed.data.extraAnswers,
       ip_hash: ipHash,

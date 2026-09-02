@@ -1344,3 +1344,99 @@ img,svg,iframe{max-width:100%}
 @media(prefers-reduced-motion:reduce){
   .concept-frequency b,.fire-reactor>i,.fire-reactor>span,.value-icon,.value-pulse i,.frequency-stage:before,.frequency-core,.core-wave b,.orbit,.satellite,.memory-icon,.memory-signal i,.memory-glow{animation:none!important}
 }
+
+/* =========================================================
+   2026-09-02 FINAL STABILITY + MOBILE GESTURE + HERO FIX
+   ========================================================= */
+html,body{
+  width:100%;
+  max-width:100%;
+  overflow-x:clip!important;
+  overscroll-behavior-x:none;
+}
+body,main{
+  touch-action:pan-y pinch-zoom;
+}
+main{position:relative;width:100%;max-width:100%;}
+
+/* Keep Vietnamese diacritics and the final Ý fully inside the hero. */
+.hero{overflow:hidden!important;}
+.hero-copy{overflow:visible!important;min-width:0!important;}
+.hero-title{
+  width:100%!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  gap:.02em!important;
+  font-size:clamp(58px,6vw,96px)!important;
+  line-height:1!important;
+  letter-spacing:-.04em!important;
+  padding:.10em 0 .12em!important;
+  margin:14px 0 12px!important;
+}
+.hero-title-line{
+  display:block!important;
+  width:max-content!important;
+  max-width:none!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  line-height:1.05!important;
+  padding:.10em .09em .12em 0!important;
+}
+.hero-title .fire-title{font-size:.92em!important;line-height:1.05!important;}
+.hero-title .harmony-title{font-size:.88em!important;line-height:1.05!important;}
+@media(max-width:699px){
+  .hero-title{font-size:clamp(46px,14.2vw,70px)!important;gap:0!important;padding-top:.16em!important;}
+  .hero-title-line{padding-top:.12em!important;padding-bottom:.12em!important;letter-spacing:-.035em!important;}
+  .hero-title .fire-title{font-size:.96em!important}.hero-title .harmony-title{font-size:.90em!important}
+}
+@media(max-width:380px){.hero-title{font-size:clamp(44px,13.7vw,58px)!important}}
+
+/* Reserve a fixed 3-line typing area on phones so following sections never jump. */
+.typing-section h2{min-height:2.25em;display:block;}
+@media(max-width:699px){
+  .typing-section{min-height:62svh!important;}
+  .typing-section h2{min-height:3.45em!important;font-size:clamp(34px,10.5vw,54px)!important;line-height:1.12!important;margin-bottom:18px!important;}
+}
+
+/* Hòa/Âm share one orbit; Hỏa/Ý share the other. Nodes are mathematically centered on the ring. */
+.frequency-stage{overflow:visible!important;}
+.orbit{transform-origin:center!important;}
+.orbit i{
+  left:50%!important;
+  right:auto!important;
+  width:52px!important;
+  height:52px!important;
+  margin:0!important;
+  transform:translate(-50%,-50%)!important;
+  font-size:9px!important;
+}
+.orbit i:first-child{top:0!important;bottom:auto!important;}
+.orbit i:last-child{top:100%!important;bottom:auto!important;}
+.orbit-one i{background:#6fe9ff!important;color:#092450!important;animation:orbit-counter-one 14s linear infinite;}
+.orbit-one i:last-child{background:#a5f4ff!important;color:#092450!important;}
+.orbit-two i{background:#ff9a55!important;color:white!important;animation:orbit-counter-two 22s linear infinite reverse;}
+.orbit-two i:last-child{background:#ff6248!important;color:white!important;}
+.frequency-core strong{display:none!important;}
+.frequency-core{gap:0!important;}
+@keyframes orbit-counter-one{to{transform:translate(-50%,-50%) rotate(-360deg)}}
+@keyframes orbit-counter-two{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@media(max-width:520px){
+  .frequency-stage{min-height:360px!important;}
+  .orbit-one{width:220px!important;height:220px!important;}
+  .orbit-two{width:296px!important;height:296px!important;}
+  .orbit i{width:42px!important;height:42px!important;font-size:7px!important;}
+}
+
+/* Conditional sub-fields in the registration flow. */
+.flow-followup{display:grid;gap:8px;margin-top:14px;padding:15px;border-radius:18px;background:rgba(255,255,255,.72);border:1px solid rgba(10,48,104,.14);box-shadow:0 10px 26px rgba(8,34,80,.07)}
+.flow-followup>span{font-size:11px;font-weight:900;letter-spacing:.08em;color:#31527f;text-transform:uppercase}
+.flow-page{max-width:100%!important;overflow-x:clip!important;overscroll-behavior-x:none;touch-action:pan-y pinch-zoom}
+
+
+/* 2026-09-02 HERO LAYER ORDER FIX
+   Keep HÒA ÂM on the first line and HỎA Ý on the second line,
+   but always paint HỎA Ý above HÒA ÂM where their glyph boxes overlap. */
+.hero-title{position:relative!important;isolation:isolate!important;}
+.hero-title-line{position:relative!important;}
+.hero-title .harmony-title{z-index:1!important;}
+.hero-title .fire-title{z-index:3!important;}
