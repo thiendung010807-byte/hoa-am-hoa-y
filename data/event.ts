@@ -8,7 +8,7 @@ export const event = {
   // Đổi ngày thật tại đây. ISO +07:00 để countdown chính xác giờ Việt Nam.
   date: "2026-09-15T18:00:00+07:00",
   dateLabel: "Thứ Ba, 15/09/2026",
-  timeLabel: "18:00 – 20:55",
+  timeLabel: "18:00 – 21:00",
   location: "Đại học Kinh tế Quốc dân",
   address: "Cánh trái nhà Văn Hóa - Đại học Kinh tế Quốc dân",
   mapsUrl: "https://maps.app.goo.gl/kxBXsBaTdgLckqYp7",
@@ -31,13 +31,13 @@ export const event = {
   ],
   questions: [
     { id: "fullName", label: "Họ và tên?", type: "text", required: true, placeholder: "Nguyễn Văn A", step: 1 },
-    { id: "phone", label: "SĐT?", type: "tel", required: true, placeholder: "09xxxxxxxx", step: 1 },
-    { id: "email", label: "Email?", type: "email", required: true, placeholder: "ban@example.com", step: 1 },
-    { id: "school", label: "Em đang học ở đâu?", description: "Chọn một trường. Nếu là NEU, điền thêm MSV; nếu chọn Trường khác, ghi tên trường của em.", type: "radio", required: true, options: ["NEU", "HUST", "HUCE", "Trường khác"], step: 1 },
+    { id: "phone", label: "Số điện thoại?", type: "tel", required: true, placeholder: "09xxxxxxxx", step: 1 },
+    { id: "email", label: "Địa chỉ Email?", type: "email", required: true, placeholder: "bnc@gmail.com", step: 1 },
+    { id: "school", label: "Em đang học ở đâu?", description: "Nhớ điền cả MSV nếu có yêu cầu nhé!", type: "radio", required: true, options: ["NEU", "HUST", "HUCE", "Khác"], step: 1 },
     { id: "facebook", label: "Link Facebook cá nhân?", type: "text", required: true, placeholder: "https://facebook.com/...", step: 1 },
-    { id: "classMajor", label: "Lớp chuyên ngành?", type: "text", required: true, placeholder: "VD: K66 Kinh tế / IT1-02...", step: 2 },
-    { id: "skills", label: "Em có kĩ năng, biệt tài hay sở thích gì không?", description: "VD: Biết chơi nhạc cụ, hát, nhảy,...", type: "textarea", required: true, placeholder: "Kể chúng mình nghe nhé...", step: 2 },
+    { id: "classMajor", label: "Lớp chuyên ngành?", type: "text", required: true, placeholder: "VD: K68 Kinh tế / IT1-02...", step: 2 },
+    { id: "skills", label: "Em có kĩ năng, biệt tài hay sở thích gì không?", description: "VD: Biết chơi nhạc cụ, hát, nhảy,...", type: "textarea", required: true, placeholder: "Tự tin kể cho anh chị biết nhé...", step: 2 },
     { id: "performance", label: "Em có muốn đóng góp một tiết mục văn nghệ cho chương trình không?", type: "radio", required: true, options: ["Có", "Không"], step: 2 },
-    { id: "note", label: "Em có điều gì thắc mắc hoặc muốn nhắn gửi tới anh chị không?", description: "Không bắt buộc", type: "textarea", placeholder: "Nhắn chúng mình bất cứ điều gì em muốn nhé 💙", step: 3 }
+    { id: "note", label: "Em có điều gì thắc mắc hoặc muốn nhắn gửi tới anh chị không?", description: "Hãy chia sẻ cùng anh chị nhé!", type: "textarea", placeholder: "Nhắn anh chị bất cứ điều gì em muốn nhé 💙", step: 3 }
   ] as Question[]
 };

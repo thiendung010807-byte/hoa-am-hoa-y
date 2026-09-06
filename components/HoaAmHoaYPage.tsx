@@ -151,7 +151,7 @@ export function HoaAmHoaYPage() {
           <motion.article whileHover={{y:-7,rotate:-1}} className="concept-card harmony">
             <div className="concept-icon"><AudioLines/></div><small>01 / HÒA ÂM</small>
             <h3>Nghe nhau. Bắt nhịp nhau.</h3>
-            <p>Mỗi người là một thanh âm khác biệt. Khi gặp đúng nhau, những cá tính riêng tạo thành một giai điệu chung.</p>
+            <p>Mỗi người là một thanh âm khác biệt. Khi gặp được nhau, những cá tính riêng tạo thành một giai điệu chung.</p>
             <div className="concept-frequency" aria-hidden="true">{Array.from({length:22},(_,i)=><b key={i}/>)}</div>
           </motion.article>
           <motion.article whileHover={{y:-7,rotate:1}} className="concept-card fire">
@@ -199,7 +199,7 @@ export function HoaAmHoaYPage() {
 
       <section className="ready section"><div className="ready-icons"><Headphones/><Flame fill="currentColor"/><Zap fill="currentColor"/></div><span>READY TO JOIN THE FREQUENCY?</span><h2>Đừng để bản hòa âm này<br/><i>thiếu bạn.</i></h2><p>Mang theo chất riêng của bạn. Phần còn lại, để chúng mình cùng bắt nhịp.</p><a className="btn light-btn" href="/dang-ky">LET'S GO! <ArrowRight size={18}/></a></section>
 
-      <footer><strong>HÒA ÂM HỎA Ý ✦ 2026</strong><span>Made with 🎧 + 🔥 by Đội SVTN Đồng Hương Bắc Ninh</span></footer>
+      <footer><strong>HÒA ÂM HỎA Ý ✦ 2026</strong><span>Made with Ban Đối Nội 🎧 + 🔥 by Đội SVTN Đồng Hương Bắc Ninh</span></footer>
     </main>}
 
   </>;
