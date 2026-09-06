@@ -119,7 +119,7 @@ function QuestionControl({
             <input className="flow-input" value={String(allValues.studentId || "")} onChange={(e) => onExtraChange("studentId", e.target.value)} placeholder="Nhập mã sinh viên" />
           </div>
         )}
-        {q.id === "school" && val === "Trường khác" && (
+        {q.id === "school" && val === "Khác" && (
           <div className="flow-followup">
             <span>Tên trường của em</span>
             <input className="flow-input" value={String(allValues.otherSchool || "")} onChange={(e) => onExtraChange("otherSchool", e.target.value)} placeholder="Nhập tên trường" />
