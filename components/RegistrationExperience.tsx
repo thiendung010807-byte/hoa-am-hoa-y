@@ -127,7 +127,7 @@ function QuestionControl({
         )}
         {q.id === "performance" && val === "Có" && (
           <div className="flow-followup">
-            <span>Cho chúng mình biết thêm về tiết mục</span>
+            <span>Cho anh chị biết thêm về tiết mục</span>
             <textarea className="flow-input flow-textarea" rows={3} value={String(allValues.performanceDetails || "")} onChange={(e) => onExtraChange("performanceDetails", e.target.value)} placeholder="Tên bài, hình thức biểu diễn và những mong muốn khác nếu có (hát cùng anh chị/bạn nào đó,...)" />
           </div>
         )}
@@ -461,7 +461,7 @@ export function RegistrationExperience() {
             exit="exit"
             transition={{ duration: reduced ? .01 : .42, ease: [0.22, 1, 0.36, 1] }}
           >
-            <span className="flow-kicker">CÂU {displayIndex} ✦ {q.step === 1 ? "VỀ BẠN" : q.step === 2 ? "HÒA ÂM HỎA Ý" : "MỘT CHÚT NỮA THÔI"}</span>
+            <span className="flow-kicker">CÂU {displayIndex} ✦ {q.step === 1 ? "VỀ BẢN THÂN" : q.step === 2 ? "HÒA ÂM HỎA Ý" : "MỘT CHÚT NỮA THÔI"}</span>
             <h1>{q.label}{q.required && <sup>*</sup>}</h1>
             {q.description && <p className="flow-description">{q.description}</p>}
             <div className="flow-control">
