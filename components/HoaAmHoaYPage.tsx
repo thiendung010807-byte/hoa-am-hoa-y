@@ -2,7 +2,7 @@
 
 import confetti from "canvas-confetti";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { CalendarDays, Clock3, MapPin, Backpack, UsersRound, ArrowDown, ArrowRight, Volume2, VolumeX, Sparkles, Heart, Camera, Flame, PartyPopper, Music2, AudioLines, Headphones, Zap } from "lucide-react";
+import { CalendarDays, Clock3, MapPin, Backpack, UsersRound, ArrowDown, ArrowRight, Volume2, VolumeX, Sparkles, Heart, Camera, Flame, PartyPopper, Music2, AudioLines, Headphones, Zap, Mail, Phone, MessageCircle, ExternalLink } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { event } from "@/data/event";
 
@@ -69,18 +69,24 @@ function Opening({ onOpen }: { onOpen: () => void }) {
   const reduced = useReducedMotion();
   const open = () => {
     if (opening) return; setOpening(true);
-    if (!reduced) confetti({ particleCount: 100, spread: 90, origin: { y: .72 } });
-    setTimeout(onOpen, reduced ? 100 : 2850);
+    if (!reduced) {
+      window.setTimeout(() => confetti({ particleCount: 70, spread: 72, scalar: .9, origin: { y: .68 } }), 1150);
+      window.setTimeout(() => confetti({ particleCount: 120, spread: 105, scalar: 1.05, origin: { y: .55 } }), 2650);
+    }
+    setTimeout(onOpen, reduced ? 100 : 4350);
   };
   return <motion.div className="opening" exit={{ opacity: 0 }} transition={{ duration: .65 }}>
+    <div className="opening-aurora" aria-hidden="true"><i/><i/><i/></div>
+    <div className="opening-grain" aria-hidden="true"/>
     <div className="rain">{Array.from({length: 18}, (_,i) => <span key={i} style={{ left: `${(i*37)%100}%`, animationDelay: `${(i%7)*-.7}s`, animationDuration: `${5+(i%5)}s` }}>{["✦","♡","★","✧","❀"][i%5]}</span>)}</div>
-    <div className="opening-copy"><span>YOU'VE GOT A SIGNAL</span><h1>Một nhịp hẹn<br/>đang chờ bạn <b>🔥</b></h1><div className="opening-mini-wave"><i/><i/><i/><i/><i/><i/></div></div>
+    <div className="opening-copy"><span>THƯ MỜI DÀNH RIÊNG CHO BẠN</span><h1>Một thanh âm mới<br/>sắp <i>chạm lửa.</i></h1><p>Đội SVTN Đồng hương Bắc Ninh gửi bạn một lời hẹn.</p><div className="opening-mini-wave"><i/><i/><i/><i/><i/><i/></div></div>
     <button className={`envelope ${opening ? "is-open" : ""}`} onClick={open} aria-label="Mở thiệp mời">
-      <div className="letter"><span>WELCOME TO</span><strong>HÒA ÂM<br/><em>HỎA Ý</em></strong><small>BẮC NINH • 2026</small><div className="letter-wave"><i/><i/><i/><i/><i/></div></div>
+      <div className="envelope-shadow" aria-hidden="true"/>
+      <div className="letter"><div className="letter-frame"/><span>TRÂN TRỌNG MỜI BẠN ĐẾN VỚI</span><strong>HÒA ÂM<br/><em>HỎA Ý</em></strong><small>{event.dateLabel} · BẮC NINH</small><div className="letter-wave"><i/><i/><i/><i/><i/></div></div>
       <div className="env-back"/><div className="env-paper"/><div className="env-left"/><div className="env-right"/><div className="env-flap"/>
       <div className="seal bnc-seal" aria-label="Logo Đội SVTN Đồng hương Bắc Ninh"><img src="/assets/bnc-logo.jpeg" alt="Logo Đội SVTN Đồng hương Bắc Ninh" /></div>
     </button>
-    <button className="open-hint" onClick={open}><Sparkles size={16}/> NHẤN ĐỂ MỞ THIỆP</button>
+    <button className="open-hint" onClick={open} disabled={opening}><Sparkles size={16}/>{opening ? "ĐANG MỞ LỜI HẸN…" : "CHẠM ĐỂ MỞ THƯ"}</button>
   </motion.div>;
 }
 
@@ -197,9 +203,18 @@ export function HoaAmHoaYPage() {
         ["06","CƯỜI THẬT NHIỀU","Đi về với thêm vài người để nhớ",<Heart key="m" fill="currentColor"/>]
       ].map(([n,t,d,icon],i)=><motion.article className={`memory memory-${i+1}`} whileHover={{y:-5}} key={String(n)}><div className="memory-head"><span>{n}</span><div className="memory-icon">{icon}</div></div><div className="memory-signal" aria-hidden="true">{Array.from({length:8},(_,j)=><i key={j}/>)}</div><b>{t}</b><p>{d}</p><div className="memory-glow"/></motion.article>)}</div></section>
 
-      <section className="ready section"><div className="ready-icons"><Headphones/><Flame fill="currentColor"/><Zap fill="currentColor"/></div><span>READY TO JOIN THE FREQUENCY?</span><h2>Đừng để bản hòa âm này<br/><i>thiếu bạn.</i></h2><p>Mang theo chất riêng của bạn. Phần còn lại, để chúng mình cùng bắt nhịp.</p><a className="btn light-btn" href="/dang-ky">LET'S GO! <ArrowRight size={18}/></a></section>
+      <section className="ready section"><div className="ready-icons"><Headphones/><Flame fill="currentColor"/><Zap fill="currentColor"/></div><span>READY TO JOIN THE FREQUENCY?</span><h2>Đừng để bản hòa âm này<br/><i>thiếu bạn.</i></h2><p>Mang theo chất riêng của bạn. Phần còn lại, để chúng mình cùng bắt nhịp.</p><a className="btn light-btn" href="/dang-ky">LET&apos;S GO! <ArrowRight size={18}/></a></section>
 
-      <footer><strong>HÒA ÂM HỎA Ý ✦ 2026</strong><span>Made with Ban Đối Nội 🎧 + 🔥 by Đội SVTN Đồng Hương Bắc Ninh</span></footer>
+      <footer className="site-footer">
+        <div className="footer-brand"><span>ĐỘI SVTN ĐỒNG HƯƠNG BẮC NINH</span><strong>HÒA ÂM<br/><i>HỎA Ý</i></strong><p>Cần thêm thông tin? Chúng mình luôn ở đây để bắt nhịp cùng bạn.</p></div>
+        <div className="footer-contacts">
+          <a href={event.contact.pageUrl} target="_blank" rel="noopener noreferrer"><MessageCircle/><span><small>PAGE CỦA ĐỘI</small><b>Ghé thăm fanpage</b></span><ExternalLink/></a>
+          <a href={event.contact.supportGroupUrl} target="_blank" rel="noopener noreferrer"><UsersRound/><span><small>GROUP MESSENGER</small><b>Hỗ trợ học tập K68 NEU</b></span><ExternalLink/></a>
+          <a href={`mailto:${event.contact.leaderEmail}`}><Mail/><span><small>EMAIL ĐỘI TRƯỞNG</small><b>{event.contact.leaderEmail}</b></span><ArrowRight/></a>
+          <a href={`tel:${event.contact.leaderPhone.replace(/\s/g, "")}`}><Phone/><span><small>SĐT ĐỘI TRƯỞNG</small><b>{event.contact.leaderPhone}</b></span><ArrowRight/></a>
+        </div>
+        <div className="footer-bottom"><strong>HÒA ÂM HỎA Ý ✦ 2026</strong><span>Made with Ban Đối Nội 🎧 + 🔥</span></div>
+      </footer>
     </main>}
 
   </>;

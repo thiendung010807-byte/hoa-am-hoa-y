@@ -1,11 +1,13 @@
 "use client";
 
 import Script from "next/script";
+import Link from "next/link";
 import confetti from "canvas-confetti";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, ChevronLeft, Sparkles } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { event, type Question } from "@/data/event";
+import { vietnamPhoneRegex } from "@/lib/phone";
 
 declare global {
   interface Window {
@@ -29,6 +31,7 @@ function QuestionControl({
   onQuickNext,
   allValues,
   onExtraChange,
+  disabled,
 }: {
   q: Question;
   value: unknown;
@@ -36,6 +39,7 @@ function QuestionControl({
   onQuickNext: () => void;
   allValues: Record<string, unknown>;
   onExtraChange: (key: string, value: string) => void;
+  disabled: boolean;
 }) {
   const val = typeof value === "string" ? value : "";
 
@@ -48,6 +52,7 @@ function QuestionControl({
         value={val}
         placeholder={q.placeholder}
         inputMode={q.type === "tel" ? "tel" : undefined}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
@@ -65,6 +70,7 @@ function QuestionControl({
         className="flow-input flow-textarea"
         autoFocus
         rows={4}
+        disabled={disabled}
         value={val}
         placeholder={q.placeholder}
         onChange={(e) => onChange(e.target.value)}
@@ -85,6 +91,7 @@ function QuestionControl({
                 type="button"
                 className={`flow-choice ${selected ? "is-selected" : ""}`}
                 key={option}
+                disabled={disabled}
                 onClick={() => {
                   if (option === "Khác" && q.allowOther) {
                     onChange("Khác: ");
@@ -102,6 +109,7 @@ function QuestionControl({
           <input
             className="flow-input flow-other"
             autoFocus
+            disabled={disabled}
             value={val.slice(6)}
             onChange={(e) => onChange(`Khác: ${e.target.value}`)}
             onKeyDown={(e) => {
@@ -116,19 +124,19 @@ function QuestionControl({
         {q.id === "school" && val === "NEU" && (
           <div className="flow-followup">
             <span>MSV của em</span>
-            <input className="flow-input" value={String(allValues.studentId || "")} onChange={(e) => onExtraChange("studentId", e.target.value)} placeholder="Nhập mã sinh viên" />
+            <input className="flow-input" disabled={disabled} value={String(allValues.studentId || "")} onChange={(e) => onExtraChange("studentId", e.target.value)} placeholder="Nhập mã sinh viên" />
           </div>
         )}
         {q.id === "school" && val === "Khác" && (
           <div className="flow-followup">
             <span>Tên trường của em</span>
-            <input className="flow-input" value={String(allValues.otherSchool || "")} onChange={(e) => onExtraChange("otherSchool", e.target.value)} placeholder="Nhập tên trường" />
+            <input className="flow-input" disabled={disabled} value={String(allValues.otherSchool || "")} onChange={(e) => onExtraChange("otherSchool", e.target.value)} placeholder="Nhập tên trường" />
           </div>
         )}
         {q.id === "performance" && val === "Có" && (
           <div className="flow-followup">
             <span>Cho anh chị biết thêm về tiết mục</span>
-            <textarea className="flow-input flow-textarea" rows={3} value={String(allValues.performanceDetails || "")} onChange={(e) => onExtraChange("performanceDetails", e.target.value)} placeholder="Tên bài, hình thức biểu diễn và những mong muốn khác nếu có (hát cùng anh chị/bạn nào đó,...)" />
+            <textarea className="flow-input flow-textarea" disabled={disabled} rows={3} value={String(allValues.performanceDetails || "")} onChange={(e) => onExtraChange("performanceDetails", e.target.value)} placeholder="Tên bài, hình thức biểu diễn và những mong muốn khác nếu có (hát cùng anh chị/bạn nào đó,...)" />
           </div>
         )}
       </>
@@ -143,6 +151,7 @@ function QuestionControl({
           <button
             type="button"
             key={option}
+            disabled={disabled}
             className={`flow-choice ${current.includes(option) ? "is-selected" : ""}`}
             onClick={() => onChange(current.includes(option) ? current.filter((x) => x !== option) : [...current, option])}
           >
@@ -155,7 +164,7 @@ function QuestionControl({
 
   if (q.type === "select") {
     return (
-      <select className="flow-input" autoFocus value={val} onChange={(e) => onChange(e.target.value)}>
+      <select className="flow-input" autoFocus disabled={disabled} value={val} onChange={(e) => onChange(e.target.value)}>
         <option value="">Chọn một đáp án</option>
         {q.options?.map((option) => <option key={option}>{option}</option>)}
       </select>
@@ -170,6 +179,7 @@ function QuestionControl({
           <button
             type="button"
             key={number}
+            disabled={disabled}
             className={Number(value) === number ? "is-selected" : ""}
             onClick={() => {
               onChange(number);
@@ -212,6 +222,7 @@ export function RegistrationExperience() {
   const [busy, setBusy] = useState(false);
   const [success, setSuccess] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const [botStatus, setBotStatus] = useState<"checking" | "ready" | "error">("checking");
   const turnstileContainerRef = useRef<HTMLDivElement | null>(null);
   const turnstileWidgetIdRef = useRef<string | null>(null);
   const [website, setWebsite] = useState("");
@@ -264,6 +275,7 @@ export function RegistrationExperience() {
         if (attempts <= 40) {
           timer = setTimeout(mountTurnstile, 125);
         } else {
+          setBotStatus("error");
           setServerError("Không thể khởi tạo xác minh chống bot. Vui lòng tải lại trang.");
         }
         return;
@@ -284,16 +296,27 @@ export function RegistrationExperience() {
           try {
             turnstileWidgetIdRef.current = window.turnstile.render(turnstileContainerRef.current, {
               sitekey: siteKey,
-              theme: "light",
+              theme: "auto",
+              appearance: "interaction-only",
+              size: "flexible",
+              language: "vi",
               action: "register",
               callback: (token: string) => {
                 setTurnstileToken(token);
+                setBotStatus("ready");
                 setServerError("");
               },
-              "expired-callback": () => setTurnstileToken(""),
-              "timeout-callback": () => setTurnstileToken(""),
+              "expired-callback": () => {
+                setTurnstileToken("");
+                setBotStatus("checking");
+              },
+              "timeout-callback": () => {
+                setTurnstileToken("");
+                setBotStatus("checking");
+              },
               "error-callback": () => {
                 setTurnstileToken("");
+                setBotStatus("error");
                 setServerError("Không tải được xác minh chống bot. Vui lòng tải lại trang hoặc thử lại sau.");
               },
             });
@@ -302,6 +325,7 @@ export function RegistrationExperience() {
             if (attempts <= 8 && !cancelled) {
               timer = setTimeout(mountTurnstile, 250);
             } else {
+              setBotStatus("error");
               setServerError("Không thể hiển thị xác minh chống bot. Vui lòng tải lại trang.");
             }
           }
@@ -324,6 +348,16 @@ export function RegistrationExperience() {
     };
   }, [siteKey, isLast]);
 
+  useEffect(() => {
+    if (!busy) return;
+    const blockNavigation = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", blockNavigation);
+    return () => window.removeEventListener("beforeunload", blockNavigation);
+  }, [busy]);
+
   const answer = values[q.id];
   const displayIndex = String(index + 1).padStart(2, "0");
   const total = String(questions.length).padStart(2, "0");
@@ -337,8 +371,8 @@ export function RegistrationExperience() {
       setError("Email này chưa đúng định dạng.");
       return false;
     }
-    if (q.id === "phone" && answer && !/^(?:\+84|0)(?:\d[ .-]?){8,10}$/.test(String(answer))) {
-      setError("Số điện thoại chưa hợp lệ.");
+    if (q.id === "phone" && answer && !vietnamPhoneRegex.test(String(answer).trim())) {
+      setError("Số điện thoại cần gồm 10 số, bắt đầu bằng 0 (hoặc +84).");
       return false;
     }
     if (q.id === "school" && answer === "NEU" && isEmpty(values.studentId)) {
@@ -432,18 +466,21 @@ export function RegistrationExperience() {
           <span>YAY! SEE YOU SOON ✦</span>
           <h1>ĐĂNG KÝ<br/>THÀNH CÔNG!</h1>
           <p>Cảm ơn bạn đã đăng ký Hòa Âm Hỏa Ý. Đừng quên kiểm tra email để nhận thông tin từ BTC nhé!</p>
-          <a href="/" className="flow-primary">QUAY LẠI TRANG CHÍNH <ArrowRight size={18}/></a>
+          <Link href="/" className="flow-primary">QUAY LẠI TRANG CHÍNH <ArrowRight size={18}/></Link>
         </motion.div>
       </main>
     );
   }
 
+  const waitingForBot = Boolean(siteKey && !turnstileToken);
+  const botChecking = waitingForBot && botStatus !== "error";
+
   return (
-    <main className="flow-page">
+    <main className={`flow-page ${busy ? "is-submitting" : ""}`} aria-busy={busy}>
       {siteKey && <Script id="cf-turnstile-api" src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" strategy="afterInteractive" />}
       <div className="flow-dots" aria-hidden="true" />
       <header className="flow-header">
-        <a href="/" className="flow-home"><ChevronLeft size={18}/> HÒA ÂM HỎA Ý</a>
+        <Link href="/" className="flow-home" aria-disabled={busy} onClick={(event) => { if (busy) event.preventDefault(); }}><ChevronLeft size={18}/> HÒA ÂM HỎA Ý</Link>
         <div className="flow-counter"><b>{displayIndex}</b><span>/ {total}</span></div>
       </header>
 
@@ -480,18 +517,22 @@ export function RegistrationExperience() {
                   setError("");
                   setServerError("");
                 }}
+                disabled={busy}
               />
               {error && <motion.p className="flow-error" initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}>{error}</motion.p>}
               {serverError && <p className="flow-server-error">{serverError}</p>}
-              {isLast && siteKey && <div className="flow-turnstile"><div ref={turnstileContainerRef} /></div>}
+              {isLast && siteKey && <div className="flow-turnstile-native" aria-label="Xác minh bảo mật"><div ref={turnstileContainerRef} /></div>}
             </div>
 
             <div className="flow-actions">
-              {index > 0 && <button type="button" className="flow-back" onClick={goBack}><ArrowLeft size={18}/> Quay lại</button>}
+              {index > 0 && <button type="button" className="flow-back" onClick={goBack} disabled={busy}><ArrowLeft size={18}/> Quay lại</button>}
               {!isLast ? (
-                <button type="button" className="flow-primary" onClick={goNext}>TIẾP TỤC <ArrowRight size={18}/></button>
+                <button type="button" className="flow-primary" onClick={goNext} disabled={busy}>TIẾP TỤC <ArrowRight size={18}/></button>
               ) : (
-                <button type="button" className="flow-primary" onClick={submit} disabled={busy}>{busy ? "ĐANG GỬI…" : "GỬI ĐĂNG KÝ ✦"}</button>
+                <button type="button" className="flow-primary" onClick={submit} disabled={busy || waitingForBot || botStatus === "error"}>
+                  {(busy || botChecking) && <span className="flow-button-spinner" aria-hidden="true"/>}
+                  {busy ? "ĐANG GỬI…" : botStatus === "error" ? "KHÔNG THỂ XÁC MINH" : botChecking ? "ĐANG KIỂM TRA…" : "GỬI ĐĂNG KÝ ✦"}
+                </button>
               )}
             </div>
           </motion.div>
@@ -499,6 +540,8 @@ export function RegistrationExperience() {
       </section>
 
       <input className="hp" tabIndex={-1} autoComplete="off" aria-hidden="true" value={website} onChange={(e) => setWebsite(e.target.value)} name="website" />
+
+      {busy && <div className="flow-submit-lock" role="status" aria-live="polite"><div><span className="flow-lock-spinner"/><strong>Đang gửi đăng ký</strong><small>Giữ nguyên trang trong giây lát nhé…</small></div></div>}
 
       <div className="flow-wave">
         <motion.div

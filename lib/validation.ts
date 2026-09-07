@@ -1,10 +1,11 @@
 import { z } from "zod";
+import { vietnamPhoneRegex } from "@/lib/phone";
 
 const answerValue = z.union([z.string().max(3000), z.array(z.string().max(300)).max(20), z.number()]);
 
 export const registrationSchema = z.object({
   fullName: z.string().trim().min(2).max(100),
-  phone: z.string().trim().regex(/^(?:\+84|0)(?:\d[ .-]?){8,10}$/),
+  phone: z.string().trim().regex(vietnamPhoneRegex),
   email: z.string().trim().email().max(160),
   school: z.enum(["NEU", "HUST", "HUCE", "Khác"]),
   facebook: z.string().trim().min(3).max(500),

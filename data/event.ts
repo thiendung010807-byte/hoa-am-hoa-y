@@ -17,6 +17,12 @@ export const event = {
   dressCode: ["BLUE", "WHITE", "JEANS"],
   bring: "Một tinh thần thật vui và sẵn sàng làm quen!",
   audience: "Những người con Bắc Ninh và các bạn muốn tìm hiểu về Đội",
+  contact: {
+    pageUrl: "https://facebook.com/THAY-LINK-PAGE-TAI-DAY",
+    supportGroupUrl: "https://m.me/j/THAY-LINK-GROUP-TAI-DAY",
+    leaderEmail: "doitruong@example.com",
+    leaderPhone: "09xx xxx xxx",
+  },
   intro: "Hòa Âm Hỏa Ý là cuộc gặp của những thanh âm trẻ: mỗi người mang một màu sắc, một nhịp riêng, một câu chuyện riêng. Khi cùng xuất hiện, chúng ta bắt nhịp để tạo nên “Hòa Âm” và cùng truyền cho nhau “Hỏa Ý” — ngọn lửa của nhiệt huyết, ý tưởng và tinh thần đồng hành.",
   timeline: [
     ["18:15–19:00", "CHECK-IN", "Đón khách, xác nhận tham gia và cùng làm quen với không gian chương trình."],

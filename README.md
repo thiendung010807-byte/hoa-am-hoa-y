@@ -58,6 +58,19 @@ Tạo Turnstile widget tại Cloudflare và thêm domain production. Lấy:
 
 Production được cấu hình fail-closed: nếu thiếu `TURNSTILE_SECRET_KEY`, API đăng ký sẽ từ chối submit thay vì tự bỏ CAPTCHA.
 
+Widget dùng chế độ `interaction-only`: bình thường chỉ hiện trạng thái kiểm tra trên nút gửi; giao diện Cloudflare chỉ xuất hiện khi thật sự cần người dùng tương tác.
+
+## Thông tin liên hệ
+
+Thay các giá trị mẫu trong `data/event.ts`, mục `contact`:
+
+- `pageUrl`: Page của Đội.
+- `supportGroupUrl`: Group Messenger hỗ trợ học tập K68 NEU.
+- `leaderEmail`: Email đội trưởng.
+- `leaderPhone`: Số điện thoại đội trưởng.
+
+Form và Apps Script cùng chấp nhận số điện thoại Việt Nam gồm đúng 10 chữ số bắt đầu bằng `0`, hoặc dạng `+84` theo sau bởi 9 chữ số. Có thể dùng dấu cách, dấu chấm hoặc dấu gạch ngang giữa các chữ số.
+
 ## 3. Vercel Environment Variables
 
 Trong Vercel → Project → Settings → Environment Variables:

@@ -117,7 +117,8 @@ function rateLimited_(ipHash) {
 function validatePayload_(data) {
   if (!data) return 'empty_payload';
   if (!clean_(data.fullName, 100)) return 'missing_name';
-  if (!/^0\d{9,10}$/.test(normalizePhone_(data.phone))) return 'invalid_phone';
+  // Same rule as the web: exactly 0 + 9 digits after normalization.
+  if (!/^0\d{9}$/.test(normalizePhone_(data.phone))) return 'invalid_phone';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail_(data.email))) return 'invalid_email';
   if (['NEU', 'HUST', 'HUCE', 'Khác'].indexOf(clean_(data.school, 50)) < 0) return 'invalid_school';
   if (data.school === 'NEU' && !clean_(data.studentId, 100)) return 'missing_student_id';
