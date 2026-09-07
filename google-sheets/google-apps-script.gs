@@ -44,14 +44,6 @@ function normalizeEmail_(email) {
   return clean_(email, 160).toLowerCase();
 }
 
-<<<<<<< HEAD
-function normalizeSchool_(school) {
-  const value = clean_(school, 50);
-  return value === 'Trường khác' ? 'Khác' : value;
-}
-
-=======
->>>>>>> 41c6eb0ddfee55bd13c78f802dfc069b5863ec90
 function secureEquals_(a, b) {
   a = String(a || '');
   b = String(b || '');
@@ -127,16 +119,9 @@ function validatePayload_(data) {
   if (!clean_(data.fullName, 100)) return 'missing_name';
   if (!/^0\d{9,10}$/.test(normalizePhone_(data.phone))) return 'invalid_phone';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail_(data.email))) return 'invalid_email';
-<<<<<<< HEAD
-  const school = normalizeSchool_(data.school);
-  if (['NEU', 'HUST', 'HUCE', 'Khác'].indexOf(school) < 0) return 'invalid_school';
-  if (school === 'NEU' && !clean_(data.studentId, 100)) return 'missing_student_id';
-  if (school === 'Khác' && !clean_(data.otherSchool, 200)) return 'missing_other_school';
-=======
   if (['NEU', 'HUST', 'HUCE', 'Trường khác'].indexOf(clean_(data.school, 50)) < 0) return 'invalid_school';
   if (data.school === 'NEU' && !clean_(data.studentId, 100)) return 'missing_student_id';
   if (data.school === 'Trường khác' && !clean_(data.otherSchool, 200)) return 'missing_other_school';
->>>>>>> 41c6eb0ddfee55bd13c78f802dfc069b5863ec90
   if (['Có', 'Không'].indexOf(clean_(data.performance, 20)) < 0) return 'invalid_performance';
   if (data.performance === 'Có' && !clean_(data.performanceDetails, 3000)) return 'missing_performance_details';
   return '';
@@ -162,21 +147,10 @@ function doPost(e) {
     }
 
     lock.waitLock(15000);
-<<<<<<< HEAD
-    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-    // Formatting entire columns on every submission is slow enough to make the
-    // Vercel request time out. setupSheet() owns formatting; doPost stays lean.
-    const sheet = spreadsheet.getSheetByName(SHEET_NAME) || ensureSheet_(spreadsheet);
-
-    const phone = normalizePhone_(data.phone);
-    const email = normalizeEmail_(data.email);
-    const school = normalizeSchool_(data.school);
-=======
     const sheet = ensureSheet_(SpreadsheetApp.getActiveSpreadsheet());
 
     const phone = normalizePhone_(data.phone);
     const email = normalizeEmail_(data.email);
->>>>>>> 41c6eb0ddfee55bd13c78f802dfc069b5863ec90
     if (isDuplicate_(sheet, phone, email)) {
       return json_({ ok: false, duplicate: true, error: 'duplicate' });
     }
@@ -187,15 +161,9 @@ function doPost(e) {
       safeCell_(data.fullName, 100),
       safeCell_(phone, 40),
       safeCell_(email, 160),
-<<<<<<< HEAD
-      safeCell_(school, 50),
-      school === 'NEU' ? safeCell_(data.studentId, 100) : '',
-      school === 'Khác' ? safeCell_(data.otherSchool, 200) : '',
-=======
       safeCell_(data.school, 50),
       data.school === 'NEU' ? safeCell_(data.studentId, 100) : '',
       data.school === 'Trường khác' ? safeCell_(data.otherSchool, 200) : '',
->>>>>>> 41c6eb0ddfee55bd13c78f802dfc069b5863ec90
       safeCell_(data.facebook, 500),
       safeCell_(data.classMajor, 200),
       safeCell_(data.skills, 3000),

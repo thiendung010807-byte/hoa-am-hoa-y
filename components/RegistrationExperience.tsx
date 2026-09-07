@@ -345,7 +345,7 @@ export function RegistrationExperience() {
       setError("Em điền thêm MSV nhé ✦");
       return false;
     }
-    if (q.id === "school" && answer === "Khác" && isEmpty(values.otherSchool)) {
+    if (q.id === "school" && answer === "Trường khác" && isEmpty(values.otherSchool)) {
       setError("Em điền tên trường nhé ✦");
       return false;
     }
@@ -371,41 +371,8 @@ export function RegistrationExperience() {
     setIndex((v) => Math.max(0, v - 1));
   };
 
-  const validateAll = () => {
-    const missingIndex = questions.findIndex((question) => question.required && isEmpty(values[question.id]));
-    if (missingIndex >= 0) {
-      setDirection(-1);
-      setIndex(missingIndex);
-      setError("Bạn trả lời câu này trước nhé ✦");
-      return false;
-    }
-    if (values.school === "NEU" && isEmpty(values.studentId)) {
-      setDirection(-1);
-      setIndex(questions.findIndex((question) => question.id === "school"));
-      setError("Em điền thêm MSV nhé ✦");
-      return false;
-    }
-    if ((values.school === "Khác" || values.school === "Trường khác") && isEmpty(values.otherSchool)) {
-      setDirection(-1);
-      setIndex(questions.findIndex((question) => question.id === "school"));
-      setError("Em điền tên trường nhé ✦");
-      return false;
-    }
-    if (values.performance === "Có" && isEmpty(values.performanceDetails)) {
-      setDirection(-1);
-      setIndex(questions.findIndex((question) => question.id === "performance"));
-      setError("Em cho chúng mình biết thêm về tiết mục nhé ✦");
-      return false;
-    }
-    return true;
-  };
-
   const submit = async () => {
-<<<<<<< HEAD
-    if (busy || !validateCurrent() || !validateAll()) return;
-=======
     if (!validateCurrent() || busy) return;
->>>>>>> 41c6eb0ddfee55bd13c78f802dfc069b5863ec90
     if (siteKey && !turnstileToken) {
       setServerError("Vui lòng hoàn tất xác minh chống bot trước khi gửi đăng ký ✦");
       return;

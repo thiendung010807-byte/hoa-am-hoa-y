@@ -30,13 +30,7 @@ export async function submitToGoogleSheets(payload: GoogleSheetsRegistration) {
   }
 
   const controller = new AbortController();
-<<<<<<< HEAD
-  // Apps Script can briefly wait on its duplicate-check lock during concurrent
-  // submissions. Keep this above the script's 15-second lock timeout.
-  const timer = setTimeout(() => controller.abort(), 20_000);
-=======
   const timer = setTimeout(() => controller.abort(), 8_000);
->>>>>>> 41c6eb0ddfee55bd13c78f802dfc069b5863ec90
 
   try {
     const res = await fetch(endpoint, {
