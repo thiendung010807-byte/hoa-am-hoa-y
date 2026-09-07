@@ -4,13 +4,16 @@ import Script from "next/script";
 import confetti from "canvas-confetti";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, ChevronLeft, Sparkles } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { event, type Question } from "@/data/event";
 
 declare global {
   interface Window {
-    onTurnstileSuccess?: (token: string) => void;
-    onTurnstileExpired?: () => void;
+    turnstile?: {
+      render: (container: HTMLElement, options: Record<string, unknown>) => string;
+      remove: (widgetId: string) => void;
+      reset: (widgetId?: string) => void;
+    };
   }
 }
 
@@ -116,7 +119,7 @@ function QuestionControl({
             <input className="flow-input" value={String(allValues.studentId || "")} onChange={(e) => onExtraChange("studentId", e.target.value)} placeholder="Nhập mã sinh viên" />
           </div>
         )}
-        {q.id === "school" && val === "Trường khác" && (
+        {q.id === "school" && val === "Khác" && (
           <div className="flow-followup">
             <span>Tên trường của em</span>
             <input className="flow-input" value={String(allValues.otherSchool || "")} onChange={(e) => onExtraChange("otherSchool", e.target.value)} placeholder="Nhập tên trường" />
@@ -124,7 +127,7 @@ function QuestionControl({
         )}
         {q.id === "performance" && val === "Có" && (
           <div className="flow-followup">
-            <span>Cho chúng mình biết thêm về tiết mục</span>
+            <span>Cho anh chị biết thêm về tiết mục</span>
             <textarea className="flow-input flow-textarea" rows={3} value={String(allValues.performanceDetails || "")} onChange={(e) => onExtraChange("performanceDetails", e.target.value)} placeholder="Tên bài, hình thức biểu diễn và những mong muốn khác nếu có (hát cùng anh chị/bạn nào đó,...)" />
           </div>
         )}
@@ -209,6 +212,8 @@ export function RegistrationExperience() {
   const [busy, setBusy] = useState(false);
   const [success, setSuccess] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileContainerRef = useRef<HTMLDivElement | null>(null);
+  const turnstileWidgetIdRef = useRef<string | null>(null);
   const [website, setWebsite] = useState("");
   const reduced = useReducedMotion();
   const q = questions[index];
@@ -242,13 +247,82 @@ export function RegistrationExperience() {
   }, []);
 
   useEffect(() => {
-    window.onTurnstileSuccess = setTurnstileToken;
-    window.onTurnstileExpired = () => setTurnstileToken("");
-    return () => {
-      delete window.onTurnstileSuccess;
-      delete window.onTurnstileExpired;
+    if (!siteKey || !isLast) return;
+
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    let attempts = 0;
+
+    const mountTurnstile = () => {
+      if (cancelled) return;
+
+      const api = window.turnstile;
+      const container = turnstileContainerRef.current;
+
+      if (!api || !container) {
+        attempts += 1;
+        if (attempts <= 40) {
+          timer = setTimeout(mountTurnstile, 125);
+        } else {
+          setServerError("Không thể khởi tạo xác minh chống bot. Vui lòng tải lại trang.");
+        }
+        return;
+      }
+
+      try {
+        if (turnstileWidgetIdRef.current) {
+          api.remove(turnstileWidgetIdRef.current);
+          turnstileWidgetIdRef.current = null;
+        }
+
+        container.innerHTML = "";
+        setTurnstileToken("");
+
+        requestAnimationFrame(() => {
+          if (cancelled || !turnstileContainerRef.current || !window.turnstile) return;
+
+          try {
+            turnstileWidgetIdRef.current = window.turnstile.render(turnstileContainerRef.current, {
+              sitekey: siteKey,
+              theme: "light",
+              action: "register",
+              callback: (token: string) => {
+                setTurnstileToken(token);
+                setServerError("");
+              },
+              "expired-callback": () => setTurnstileToken(""),
+              "timeout-callback": () => setTurnstileToken(""),
+              "error-callback": () => {
+                setTurnstileToken("");
+                setServerError("Không tải được xác minh chống bot. Vui lòng tải lại trang hoặc thử lại sau.");
+              },
+            });
+          } catch {
+            attempts += 1;
+            if (attempts <= 8 && !cancelled) {
+              timer = setTimeout(mountTurnstile, 250);
+            } else {
+              setServerError("Không thể hiển thị xác minh chống bot. Vui lòng tải lại trang.");
+            }
+          }
+        });
+      } catch {
+        attempts += 1;
+        if (attempts <= 8) timer = setTimeout(mountTurnstile, 250);
+      }
     };
-  }, []);
+
+    mountTurnstile();
+
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+      if (turnstileWidgetIdRef.current && window.turnstile) {
+        try { window.turnstile.remove(turnstileWidgetIdRef.current); } catch {}
+        turnstileWidgetIdRef.current = null;
+      }
+    };
+  }, [siteKey, isLast]);
 
   const answer = values[q.id];
   const displayIndex = String(index + 1).padStart(2, "0");
@@ -271,7 +345,7 @@ export function RegistrationExperience() {
       setError("Em điền thêm MSV nhé ✦");
       return false;
     }
-    if (q.id === "school" && answer === "Trường khác" && isEmpty(values.otherSchool)) {
+    if (q.id === "school" && answer === "Khác" && isEmpty(values.otherSchool)) {
       setError("Em điền tên trường nhé ✦");
       return false;
     }
@@ -297,8 +371,41 @@ export function RegistrationExperience() {
     setIndex((v) => Math.max(0, v - 1));
   };
 
+  const validateAll = () => {
+    const missingIndex = questions.findIndex((question) => question.required && isEmpty(values[question.id]));
+    if (missingIndex >= 0) {
+      setDirection(-1);
+      setIndex(missingIndex);
+      setError("Bạn trả lời câu này trước nhé ✦");
+      return false;
+    }
+    if (values.school === "NEU" && isEmpty(values.studentId)) {
+      setDirection(-1);
+      setIndex(questions.findIndex((question) => question.id === "school"));
+      setError("Em điền thêm MSV nhé ✦");
+      return false;
+    }
+    if ((values.school === "Khác" || values.school === "Trường khác") && isEmpty(values.otherSchool)) {
+      setDirection(-1);
+      setIndex(questions.findIndex((question) => question.id === "school"));
+      setError("Em điền tên trường nhé ✦");
+      return false;
+    }
+    if (values.performance === "Có" && isEmpty(values.performanceDetails)) {
+      setDirection(-1);
+      setIndex(questions.findIndex((question) => question.id === "performance"));
+      setError("Em cho chúng mình biết thêm về tiết mục nhé ✦");
+      return false;
+    }
+    return true;
+  };
+
   const submit = async () => {
-    if (!validateCurrent() || busy || (!!siteKey && !turnstileToken)) return;
+    if (busy || !validateCurrent() || !validateAll()) return;
+    if (siteKey && !turnstileToken) {
+      setServerError("Vui lòng hoàn tất xác minh chống bot trước khi gửi đăng ký ✦");
+      return;
+    }
     setBusy(true);
     setServerError("");
     try {
@@ -362,7 +469,7 @@ export function RegistrationExperience() {
 
   return (
     <main className="flow-page">
-      {siteKey && <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" />}
+      {siteKey && <Script id="cf-turnstile-api" src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" strategy="afterInteractive" />}
       <div className="flow-dots" aria-hidden="true" />
       <header className="flow-header">
         <a href="/" className="flow-home"><ChevronLeft size={18}/> HÒA ÂM HỎA Ý</a>
@@ -383,7 +490,7 @@ export function RegistrationExperience() {
             exit="exit"
             transition={{ duration: reduced ? .01 : .42, ease: [0.22, 1, 0.36, 1] }}
           >
-            <span className="flow-kicker">CÂU {displayIndex} ✦ {q.step === 1 ? "VỀ BẠN" : q.step === 2 ? "HÒA ÂM HỎA Ý" : "MỘT CHÚT NỮA THÔI"}</span>
+            <span className="flow-kicker">CÂU {displayIndex} ✦ {q.step === 1 ? "VỀ BẢN THÂN" : q.step === 2 ? "HÒA ÂM HỎA Ý" : "MỘT CHÚT NỮA THÔI"}</span>
             <h1>{q.label}{q.required && <sup>*</sup>}</h1>
             {q.description && <p className="flow-description">{q.description}</p>}
             <div className="flow-control">
@@ -405,7 +512,7 @@ export function RegistrationExperience() {
               />
               {error && <motion.p className="flow-error" initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}>{error}</motion.p>}
               {serverError && <p className="flow-server-error">{serverError}</p>}
-              {isLast && siteKey && <div className="flow-turnstile"><div className="cf-turnstile" data-sitekey={siteKey} data-callback="onTurnstileSuccess" data-expired-callback="onTurnstileExpired" data-theme="light" /></div>}
+              {isLast && siteKey && <div className="flow-turnstile"><div ref={turnstileContainerRef} /></div>}
             </div>
 
             <div className="flow-actions">
@@ -413,7 +520,7 @@ export function RegistrationExperience() {
               {!isLast ? (
                 <button type="button" className="flow-primary" onClick={goNext}>TIẾP TỤC <ArrowRight size={18}/></button>
               ) : (
-                <button type="button" className="flow-primary" onClick={submit} disabled={busy || (!!siteKey && !turnstileToken)}>{busy ? "ĐANG GỬI…" : "GỬI ĐĂNG KÝ ✦"}</button>
+                <button type="button" className="flow-primary" onClick={submit} disabled={busy}>{busy ? "ĐANG GỬI…" : "GỬI ĐĂNG KÝ ✦"}</button>
               )}
             </div>
           </motion.div>
