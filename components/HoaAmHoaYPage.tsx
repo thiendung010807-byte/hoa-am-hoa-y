@@ -137,7 +137,7 @@ export function HoaAmHoaYPage() {
           <span className="eyebrow">BẮC NINH ✦ TURN UP THE VOLUME</span><h1 className="hero-title"><span className="hero-title-line harmony-title">HÒA ÂM</span><span className="hero-title-line fire-title">HỎA Ý</span></h1><div className="hero-frequency" aria-hidden="true">{Array.from({length:22},(_,i)=><b key={i}/>)}</div><p>{event.organization}</p><blockquote>{event.tagline}</blockquote>
           <div className="hero-actions"><button className="btn primary" type="button" onClick={scrollToStory}>KHÁM PHÁ <ArrowDown size={18}/></button><a className="btn ghost" href="/dang-ky">ĐĂNG KÝ THAM GIA</a></div>
         </motion.div>
-        <div className="scrapbook" aria-hidden="true"><div className="vinyl-disc"><Music2/><span>HÒA ÂM</span></div><div className="polaroid p1"><div className="photo-placeholder photo-real"><img src="/assets/hoa-am-card-1.jpeg" alt="Hoạt động của Đội SVTN Đồng hương Bắc Ninh" /></div><span>find your frequency ✦</span></div><div className="polaroid p2"><div className="photo-placeholder photo-real alt"><img src="/assets/hoa-am-card-2.jpeg" alt="Khoảnh khắc tập thể" /></div><span>spark the moment 🔥</span></div><div className="sticker star"><AudioLines/></div><div className="sticker heart"><Flame fill="currentColor"/></div><div className="floating-note note-a">♪</div><div className="floating-note note-b">♫</div></div>
+        <div className="scrapbook" aria-hidden="true"><div className="vinyl-disc"><Music2/><span>HÒA ÂM</span></div><div className="polaroid p1"><div className="photo-placeholder photo-real"><img src="/assets/hoa-am-card-1.jpg" alt="Hoạt động của Đội SVTN Đồng hương Bắc Ninh" /></div><span>find your frequency ✦</span></div><div className="polaroid p2"><div className="photo-placeholder photo-real alt"><img src="/assets/hoa-am-card-2.jpg" alt="Khoảnh khắc tập thể" /></div><span>spark the moment 🔥</span></div><div className="sticker star"><AudioLines/></div><div className="sticker heart"><Flame fill="currentColor"/></div><div className="floating-note note-a">♪</div><div className="floating-note note-b">♫</div></div>
       </section>
 
       <div className="marquee" aria-label="Hòa Âm Hỏa Ý · Bắc Ninh · Tuổi trẻ · Kết nối · Tình nguyện">
@@ -208,12 +208,12 @@ export function HoaAmHoaYPage() {
       <footer className="site-footer">
         <div className="footer-brand"><span>ĐỘI SVTN ĐỒNG HƯƠNG BẮC NINH</span><strong>HÒA ÂM<br/><i>HỎA Ý</i></strong><p>Cần thêm thông tin? Chúng mình luôn ở đây để bắt nhịp cùng bạn.</p></div>
         <div className="footer-contacts">
-          <a href={event.contact.pageUrl} target="_blank" rel="noopener noreferrer"><MessageCircle/><span><small>PAGE CỦA ĐỘI</small><b>Ghé thăm fanpage</b></span><ExternalLink/></a>
-          <a href={event.contact.supportGroupUrl} target="_blank" rel="noopener noreferrer"><UsersRound/><span><small>GROUP MESSENGER</small><b>Hỗ trợ học tập K68 NEU</b></span><ExternalLink/></a>
-          <a href={`mailto:${event.contact.leaderEmail}`}><Mail/><span><small>EMAIL ĐỘI TRƯỞNG</small><b>{event.contact.leaderEmail}</b></span><ArrowRight/></a>
+          <a href={event.contact.pageUrl} target="_blank" rel="noopener noreferrer"><MessageCircle/><span><small>PAGE CỦA ĐỘI</small><b>Ghé thăm Page Đội</b></span><ExternalLink/></a>
+          <a href={event.contact.supportGroupUrl} target="_blank" rel="noopener noreferrer"><UsersRound/><span><small>GROUP HTHT BẮC NINH</small><b>Hỗ trợ học tập K68 NEU</b></span><ExternalLink/></a>
+          <a href={`mailto:${event.contact.leaderEmail}`}><Mail/><span><small>EMAIL CỦA ĐỘI</small><b>{event.contact.leaderEmail}</b></span><ArrowRight/></a>
           <a href={`tel:${event.contact.leaderPhone.replace(/\s/g, "")}`}><Phone/><span><small>SĐT ĐỘI TRƯỞNG</small><b>{event.contact.leaderPhone}</b></span><ArrowRight/></a>
         </div>
-        <div className="footer-bottom"><strong>HÒA ÂM HỎA Ý ✦ 2026</strong><span>Made with Ban Đối Nội 🎧 + 🔥</span></div>
+        <div className="footer-bottom"><strong>HÒA ÂM HỎA Ý ✦ 2026</strong><span>Made with 🎧 + 🔥 by Đội Sinh Viên Tình Nguyện Đồng Hương Bắc Ninh</span></div>
       </footer>
     </main>}
 
