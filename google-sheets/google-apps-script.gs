@@ -119,9 +119,9 @@ function validatePayload_(data) {
   if (!clean_(data.fullName, 100)) return 'missing_name';
   if (!/^0\d{9,10}$/.test(normalizePhone_(data.phone))) return 'invalid_phone';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail_(data.email))) return 'invalid_email';
-  if (['NEU', 'HUST', 'HUCE', 'Trường khác'].indexOf(clean_(data.school, 50)) < 0) return 'invalid_school';
+  if (['NEU', 'HUST', 'HUCE', 'Khác'].indexOf(clean_(data.school, 50)) < 0) return 'invalid_school';
   if (data.school === 'NEU' && !clean_(data.studentId, 100)) return 'missing_student_id';
-  if (data.school === 'Trường khác' && !clean_(data.otherSchool, 200)) return 'missing_other_school';
+  if (data.school === 'Khác' && !clean_(data.otherSchool, 200)) return 'missing_other_school';
   if (['Có', 'Không'].indexOf(clean_(data.performance, 20)) < 0) return 'invalid_performance';
   if (data.performance === 'Có' && !clean_(data.performanceDetails, 3000)) return 'missing_performance_details';
   return '';
@@ -163,7 +163,7 @@ function doPost(e) {
       safeCell_(email, 160),
       safeCell_(data.school, 50),
       data.school === 'NEU' ? safeCell_(data.studentId, 100) : '',
-      data.school === 'Trường khác' ? safeCell_(data.otherSchool, 200) : '',
+      data.school === 'Khác' ? safeCell_(data.otherSchool, 200) : '',
       safeCell_(data.facebook, 500),
       safeCell_(data.classMajor, 200),
       safeCell_(data.skills, 3000),

@@ -133,7 +133,7 @@ Vercel sẽ tự deploy lại.
 - Submit bình thường → xuất hiện đúng một dòng trong Sheet.
 - Timestamp phải là giờ Việt Nam.
 - Chọn NEU → cột MSV NEU có dữ liệu.
-- Chọn Trường khác → cột Trường khác có dữ liệu.
+- Chọn Khác → cột Trường khác có dữ liệu.
 - Chọn Có văn nghệ → Chi tiết tiết mục có dữ liệu.
 - Gửi lại cùng email/SĐT → web báo đã đăng ký.
 - Tắt/xóa Turnstile secret ở production để kiểm thử cấu hình → submit phải bị từ chối (sau đó khôi phục ngay).

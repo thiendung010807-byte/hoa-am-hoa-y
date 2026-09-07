@@ -345,7 +345,7 @@ export function RegistrationExperience() {
       setError("Em điền thêm MSV nhé ✦");
       return false;
     }
-    if (q.id === "school" && answer === "Trường khác" && isEmpty(values.otherSchool)) {
+    if (q.id === "school" && answer === "Khác" && isEmpty(values.otherSchool)) {
       setError("Em điền tên trường nhé ✦");
       return false;
     }

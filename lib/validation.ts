@@ -6,7 +6,7 @@ export const registrationSchema = z.object({
   fullName: z.string().trim().min(2).max(100),
   phone: z.string().trim().regex(/^(?:\+84|0)(?:\d[ .-]?){8,10}$/),
   email: z.string().trim().email().max(160),
-  school: z.enum(["NEU", "HUST", "HUCE", "Trường khác"]),
+  school: z.enum(["NEU", "HUST", "HUCE", "Khác"]),
   facebook: z.string().trim().min(3).max(500),
   classMajor: z.string().trim().min(1).max(200),
   skills: z.string().trim().min(1).max(3000),
@@ -23,7 +23,7 @@ export const registrationSchema = z.object({
   if (data.school === "NEU" && !studentId) {
     ctx.addIssue({ code: "custom", path: ["extraAnswers", "studentId"], message: "Thiếu MSV" });
   }
-  if (data.school === "Trường khác" && !otherSchool) {
+  if (data.school === "Khác" && !otherSchool) {
     ctx.addIssue({ code: "custom", path: ["extraAnswers", "otherSchool"], message: "Thiếu tên trường" });
   }
   if (data.performance === "Có" && !performanceDetails) {
