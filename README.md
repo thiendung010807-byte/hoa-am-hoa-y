@@ -69,6 +69,15 @@ Thay các giá trị mẫu trong `data/event.ts`, mục `contact`:
 - `leaderEmail`: Email đội trưởng.
 - `leaderPhone`: Số điện thoại đội trưởng.
 
+## Ảnh bản đồ và nhạc nền
+
+Chép hai file sau vào `public/assets` (giữ đúng tên để không phải sửa code):
+
+- `hoa-am-map.jpg`: ảnh vuông dùng cho card sơ đồ địa điểm.
+- `hoa-am-hoa-y.mp3`: nhạc nền tự phát sau khi khách mở thư và vào trang chính.
+
+Nút nhạc chỉ xuất hiện ở góc phải dưới trang chính. Nhấn nút để bật/tắt tiếng; trang mở thư và trang đăng ký không hiển thị nút này.
+
 Form và Apps Script cùng chấp nhận số điện thoại Việt Nam gồm đúng 10 chữ số bắt đầu bằng `0`, hoặc dạng `+84` theo sau bởi 9 chữ số. Có thể dùng dấu cách, dấu chấm hoặc dấu gạch ngang giữa các chữ số.
 
 ## 3. Vercel Environment Variables

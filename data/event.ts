@@ -13,7 +13,9 @@ export const event = {
   address: "Cánh phải Nhà Văn Hóa - Đại học Kinh tế Quốc dân",
   mapsUrl: "https://maps.app.goo.gl/kxBXsBaTdgLckqYp7",
   mapsEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d254.9298268680794!2d105.84487874256105!3d20.999656294540028!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ac71752d8f79%3A0xd2ec575c01017afa!2zVHLGsOG7nW5nIMSQ4bqhaSBI4buNYyBLaW5oIFThur8gUXXhu5FjIETDom4gKE5FVSk!5e1!3m2!1svi!2s!4v1788366465649!5m2!1svi!2s",
-  musicUrl: "",
+  // Thay ảnh và nhạc bằng đúng hai tên file này trong public/assets.
+  mapImageUrl: "/assets/hoa-am-map.png",
+  musicUrl: "/assets/hoa-am-hoa-y.mp3",
   dressCode: ["BLUE", "WHITE", "JEANS"],
   bring: "Một tinh thần thật vui và sẵn sàng làm quen!",
   audience: "Những người con Bắc Ninh đang học tập tại Hà Nội",

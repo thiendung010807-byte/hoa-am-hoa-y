@@ -2,8 +2,8 @@
 
 import confetti from "canvas-confetti";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { CalendarDays, Clock3, MapPin, Backpack, UsersRound, ArrowDown, ArrowRight, Volume2, VolumeX, Sparkles, Heart, Camera, Flame, PartyPopper, Music2, AudioLines, Headphones, Zap, Mail, Phone, MessageCircle, ExternalLink } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { CalendarDays, Clock3, MapPin, UsersRound, ArrowDown, ArrowRight, Volume2, VolumeX, Sparkles, Heart, Camera, Flame, PartyPopper, Music2, AudioLines, Headphones, Zap, Mail, Phone, MessageCircle, ExternalLink } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { event } from "@/data/event";
 
 declare global { interface Window { onTurnstileSuccess?: (token: string) => void; onTurnstileExpired?: () => void; } }
@@ -64,11 +64,13 @@ function MiniCalendar() {
   </div>;
 }
 
-function Opening({ onOpen }: { onOpen: () => void }) {
+function Opening({ onOpen, onPrimeMusic }: { onOpen: () => void; onPrimeMusic: () => void }) {
   const [opening, setOpening] = useState(false);
   const reduced = useReducedMotion();
   const open = () => {
-    if (opening) return; setOpening(true);
+    if (opening) return;
+    onPrimeMusic();
+    setOpening(true);
     if (!reduced) {
       window.setTimeout(() => confetti({ particleCount: 70, spread: 72, scalar: .9, origin: { y: .68 } }), 1150);
       window.setTimeout(() => confetti({ particleCount: 120, spread: 105, scalar: 1.05, origin: { y: .55 } }), 2650);
@@ -93,6 +95,7 @@ function Opening({ onOpen }: { onOpen: () => void }) {
 export function HoaAmHoaYPage() {
   const [opened, setOpened] = useState(false);
   const [music, setMusic] = useState(false);
+  const [musicProgress, setMusicProgress] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   const typing = useTyping();
 
@@ -122,14 +125,48 @@ export function HoaAmHoaYPage() {
     };
   }, []);
 
-  const toggleMusic = async () => { const a = audioRef.current; if (!a) return; if (a.paused) { try { await a.play(); setMusic(true); } catch {} } else { a.pause(); setMusic(false); } };
-  const open = () => { setOpened(true); setTimeout(() => { audioRef.current?.play().then(() => setMusic(true)).catch(() => {}); }, 100); };
+  const primeMusic = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.muted = false;
+    audio.volume = 0;
+    void audio.play().catch(() => {});
+  };
+  const toggleMusic = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (audio.paused) {
+      audio.muted = false;
+      audio.volume = .72;
+      try { await audio.play(); setMusic(true); } catch { setMusic(false); }
+      return;
+    }
+    audio.muted = !audio.muted;
+    if (!audio.muted) audio.volume = .72;
+    setMusic(!audio.muted);
+  };
+  const open = () => {
+    setOpened(true);
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.muted = false;
+    audio.volume = .72;
+    void audio.play().then(() => setMusic(true)).catch(() => setMusic(false));
+  };
+  const updateMusicProgress = () => {
+    const audio = audioRef.current;
+    const progress = audio && Number.isFinite(audio.duration) && audio.duration > 0
+      ? audio.currentTime / audio.duration
+      : 0;
+    setMusicProgress(Math.min(1, Math.max(0, progress)));
+  };
   const scrollToStory = () => document.getElementById("story")?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return <>
-    <AnimatePresence>{!opened && <Opening onOpen={open}/>}</AnimatePresence>
+    {event.musicUrl && <audio ref={audioRef} loop preload="auto" onLoadedMetadata={updateMusicProgress} onDurationChange={updateMusicProgress} onTimeUpdate={updateMusicProgress}><source src={event.musicUrl} type="audio/mpeg"/></audio>}
+    <AnimatePresence>{!opened && <Opening onOpen={open} onPrimeMusic={primeMusic}/>}</AnimatePresence>
     {opened && <main>
-      {event.musicUrl && <><audio ref={audioRef} loop preload="none"><source src={event.musicUrl} type="audio/mpeg"/></audio><button className="music-btn" onClick={toggleMusic} aria-label={music ? "Tắt nhạc" : "Bật nhạc"}>{music ? <Volume2/> : <VolumeX/>}</button></>}
+      {event.musicUrl && <button className={`music-btn ${music ? "is-playing" : "is-muted"}`} style={{ "--music-progress": `${musicProgress * 360}deg` } as CSSProperties} onClick={toggleMusic} aria-label={music ? "Tắt nhạc" : "Bật nhạc"} title={music ? "Tắt nhạc" : "Bật nhạc"}>{music ? <Volume2/> : <VolumeX/>}</button>}
       <section className="hero section">
         <div className="hero-fire-glow"/><div className="hero-sound-rings" aria-hidden="true"><i/><i/><i/></div><div className="hero-orb one"/><div className="hero-orb two"/>
         <div className="hero-sparks" aria-hidden="true">{Array.from({length:36},(_,i)=><i key={i} style={{ left: `${2 + ((i * 29) % 96)}%`, animationDelay: `${-((i * 0.37) % 5.4)}s`, animationDuration: `${4.2 + (i % 6) * 0.45}s` }}/>)}</div>
@@ -179,7 +216,7 @@ export function HoaAmHoaYPage() {
 
       <section className="typing-section section"><div className="typing-flame"><Flame fill="currentColor"/></div><span>Hòa Âm Hỏa Ý là…</span><h2>{typing}<i>|</i></h2><div className="soundline" aria-hidden="true">{Array.from({length:36},(_,i)=><b key={i}/>)}</div></section>
 
-      <section className="count-section section"><span className="eyebrow light">CHÚNG TA SẼ GẶP NHAU SAU</span><Countdown/><div className="calendar-info"><MiniCalendar/><div className="event-card"><span className="tape">HÒA ÂM HỎA Ý PASS</span><div><CalendarDays/><p><small>NGÀY</small><b>{event.dateLabel}</b></p></div><div><Clock3/><p><small>THỜI GIAN</small><b>{event.timeLabel}</b></p></div><div><MapPin/><p><small>ĐỊA ĐIỂM</small><b>{event.location}</b></p></div><div><Sparkles/><p><small>CHẤT RIÊNG</small><b>Mang theo phiên bản thật nhất của bạn</b></p></div><div><Backpack/><p><small>MANG THEO</small><b>{event.bring}</b></p></div><div><UsersRound/><p><small>DÀNH CHO</small><b>{event.audience}</b></p></div></div></div></section>
+      <section className="count-section section"><span className="eyebrow light">CHÚNG TA SẼ GẶP NHAU SAU</span><Countdown/><div className="calendar-info"><MiniCalendar/><div className="event-card"><span className="tape">HÒA ÂM HỎA Ý PASS</span><div><CalendarDays/><p><small>NGÀY</small><b>{event.dateLabel}</b></p></div><div><Clock3/><p><small>THỜI GIAN</small><b>{event.timeLabel}</b></p></div><div><MapPin/><p><small>ĐỊA ĐIỂM</small><b>{event.location}</b></p></div><div><UsersRound/><p><small>DÀNH CHO</small><b>{event.audience}</b></p></div></div></div></section>
 
       <section className="frequency-lab section">
         <div className="frequency-copy"><span className="eyebrow">TRẠM HÒA TẦN SỐ</span><h2>Đến đây với<br/><i>chất riêng.</i></h2><p>Mang theo một câu chuyện, một giai điệu bạn thích và năng lượng sẵn sàng bắt nhịp. Mỗi cá tính là một tần số riêng — gặp nhau để Hòa Âm, chạm nhau để Hỏa Ý.</p><div className="frequency-tags"><span>01 · MỘT CÂU CHUYỆN</span><span>02 · MỘT GIAI ĐIỆU</span><span>03 · MỘT TRÁI TIM</span></div></div>
@@ -192,7 +229,7 @@ export function HoaAmHoaYPage() {
 
       <section className="timeline-section section"><span className="eyebrow">TIMELINE HÒA ÂM HỎA Ý</span><h2>Một buổi tối,<br/>rất nhiều <i>khoảnh khắc.</i></h2><div className="timeline">{event.timeline.map(([time,title,desc],i)=><motion.div className="timeline-row" key={time} initial={{opacity:0,x:i%2?-30:30}} whileInView={{opacity:1,x:0}} viewport={{once:true,amount:.35}}><time>{time}</time><div className="dot">{String(i+1).padStart(2,"0")}</div><div><h3>{title}</h3><p>{desc}</p></div></motion.div>)}</div></section>
 
-      <section className="location section"><div className="location-card"><span className="eyebrow">CHÚNG TA SẼ GẶP NHAU Ở ĐÂU?</span><h2>{event.location}</h2><p><MapPin size={19}/>{event.address}</p><a className="btn primary" href={event.mapsUrl} target="_blank" rel="noopener noreferrer">XEM TRÊN GOOGLE MAPS <ArrowRight size={18}/></a></div><div className="map-frame"><iframe title="Bản đồ địa điểm Hòa Âm Hỏa Ý" src={event.mapsEmbedUrl} loading="lazy" referrerPolicy="no-referrer-when-downgrade" /></div></section>
+      <section className="location section"><div className="location-card"><span className="eyebrow">CHÚNG TA SẼ GẶP NHAU Ở ĐÂU?</span><h2>{event.location}</h2><p><MapPin size={19}/>{event.address}</p><a className="btn primary" href={event.mapsUrl} target="_blank" rel="noopener noreferrer">XEM TRÊN GOOGLE MAPS <ArrowRight size={18}/></a></div><div className="map-image-card"><div className="map-image-placeholder" aria-hidden="true"><MapPin/><span>SƠ ĐỒ ĐỊA ĐIỂM</span><small>HÒA ÂM HỎA Ý</small></div><img src={event.mapImageUrl} alt="Sơ đồ địa điểm tổ chức Hòa Âm Hỏa Ý" onError={(image) => { image.currentTarget.hidden = true; }}/><span className="map-image-label">MAP · HÒA ÂM HỎA Ý</span></div></section>
 
       <section className="memories section"><span className="eyebrow">HÒA ÂM HỎA Ý SẼ CÓ…</span><h2>Những thứ đáng để<br/><i>nhớ thật lâu.</i></h2><div className="memory-grid">{[
         ["01","TRÒ CHƠI BẮT NHỊP","Phá băng cực nhanh, bật mood cực cháy",<PartyPopper key="m"/>],
