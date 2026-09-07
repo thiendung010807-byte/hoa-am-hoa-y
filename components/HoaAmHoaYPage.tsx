@@ -150,8 +150,13 @@ export function HoaAmHoaYPage() {
         <div className="concept-duo">
           <motion.article whileHover={{y:-7,rotate:-1}} className="concept-card harmony">
             <div className="concept-icon"><AudioLines/></div><small>01 / HÒA ÂM</small>
+<<<<<<< HEAD
             <h3>Cùng nghe, cùng hát, cùng hòa giọng.</h3>
             <p>Từ Quan họ Bắc Ninh đến những ca khúc quen thuộc của tuổi sinh viên, kết hợp cùng những thanh âm riêng của mỗi người để tạo lên giai điệu chung vô cùng rực cháy.</p>
+=======
+            <h3>Nghe nhau. Bắt nhịp nhau.</h3>
+            <p>Mỗi người là một thanh âm khác biệt. Khi gặp được nhau, những cá tính riêng tạo thành một giai điệu chung.</p>
+>>>>>>> 41c6eb0ddfee55bd13c78f802dfc069b5863ec90
             <div className="concept-frequency" aria-hidden="true">{Array.from({length:22},(_,i)=><b key={i}/>)}</div>
           </motion.article>
           <motion.article whileHover={{y:-7,rotate:1}} className="concept-card fire">

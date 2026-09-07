@@ -401,7 +401,11 @@ export function RegistrationExperience() {
   };
 
   const submit = async () => {
+<<<<<<< HEAD
     if (busy || !validateCurrent() || !validateAll()) return;
+=======
+    if (!validateCurrent() || busy) return;
+>>>>>>> 41c6eb0ddfee55bd13c78f802dfc069b5863ec90
     if (siteKey && !turnstileToken) {
       setServerError("Vui lòng hoàn tất xác minh chống bot trước khi gửi đăng ký ✦");
       return;

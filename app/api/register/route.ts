@@ -9,6 +9,8 @@ export const maxDuration = 30;
 
 const MAX_BODY_BYTES = 20_000;
 
+const MAX_BODY_BYTES = 20_000;
+
 function response(body: unknown, status = 200) {
   return NextResponse.json(body, {
     status,

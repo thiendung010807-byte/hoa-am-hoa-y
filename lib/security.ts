@@ -6,10 +6,17 @@ export function clientIp(headers: Headers) {
 }
 
 export function hashIp(ip: string) {
+<<<<<<< HEAD
   // Reuse the server-only webhook secret as a safe fallback so a missing
   // optional IP salt cannot take the whole registration endpoint down.
   const salt = process.env.IP_HASH_SALT || process.env.GOOGLE_SHEETS_WEBHOOK_SECRET;
   if (!salt && process.env.NODE_ENV === "production") throw new Error("ip_hash_secret_missing");
+=======
+  const salt = process.env.IP_HASH_SALT;
+  if (!salt && process.env.NODE_ENV === "production") {
+    throw new Error("IP_HASH_SALT_missing");
+  }
+>>>>>>> 41c6eb0ddfee55bd13c78f802dfc069b5863ec90
   return crypto
     .createHmac("sha256", salt || "local-development-only")
     .update(ip)

@@ -8,9 +8,15 @@ export const event = {
   // Đổi ngày thật tại đây. ISO +07:00 để countdown chính xác giờ Việt Nam.
   date: "2026-09-15T18:00:00+07:00",
   dateLabel: "Thứ Ba, 15/09/2026",
+<<<<<<< HEAD
   timeLabel: "18:30 – 21:00",
   location: "BTC sẽ cập nhật lại sau",
   address: "BTC sẽ cập nhật lại sau",
+=======
+  timeLabel: "18:00 – 21:00",
+  location: "Đại học Kinh tế Quốc dân",
+  address: "Cánh trái nhà Văn Hóa - Đại học Kinh tế Quốc dân",
+>>>>>>> 41c6eb0ddfee55bd13c78f802dfc069b5863ec90
   mapsUrl: "https://maps.app.goo.gl/kxBXsBaTdgLckqYp7",
   mapsEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d254.9298268680794!2d105.84487874256105!3d20.999656294540028!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ac71752d8f79%3A0xd2ec575c01017afa!2zVHLGsOG7nW5nIMSQ4bqhaSBI4buNYyBLaW5oIFThur8gUXXhu5FjIETDom4gKE5FVSk!5e1!3m2!1svi!2s!4v1788366465649!5m2!1svi!2s",
   musicUrl: "",

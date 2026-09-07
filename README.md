@@ -68,10 +68,17 @@ NEXT_PUBLIC_TURNSTILE_SITE_KEY=...
 TURNSTILE_SECRET_KEY=...
 GOOGLE_SHEETS_WEBHOOK_URL=https://script.google.com/macros/s/.../exec
 GOOGLE_SHEETS_WEBHOOK_SECRET=<giống WEBHOOK_SECRET trong Apps Script>
+<<<<<<< HEAD
 IP_HASH_SALT=<chuỗi random khác, ít nhất 32 bytes; khuyến nghị>
 ```
 
 `GOOGLE_SHEETS_WEBHOOK_SECRET`, `TURNSTILE_SECRET_KEY`, `IP_HASH_SALT` tuyệt đối không được có tiền tố `NEXT_PUBLIC_`. Nếu chưa đặt `IP_HASH_SALT`, server sẽ tạm dùng webhook secret để tạo IP hash thay vì làm hỏng luồng đăng ký.
+=======
+IP_HASH_SALT=<chuỗi random khác, ít nhất 32 bytes>
+```
+
+`GOOGLE_SHEETS_WEBHOOK_SECRET`, `TURNSTILE_SECRET_KEY`, `IP_HASH_SALT` tuyệt đối không được có tiền tố `NEXT_PUBLIC_`.
+>>>>>>> 41c6eb0ddfee55bd13c78f802dfc069b5863ec90
 
 Có thể tạo secret bằng:
 
@@ -133,7 +140,11 @@ Vercel sẽ tự deploy lại.
 - Submit bình thường → xuất hiện đúng một dòng trong Sheet.
 - Timestamp phải là giờ Việt Nam.
 - Chọn NEU → cột MSV NEU có dữ liệu.
+<<<<<<< HEAD
 - Chọn Khác → cột Trường khác có dữ liệu.
+=======
+- Chọn Trường khác → cột Trường khác có dữ liệu.
+>>>>>>> 41c6eb0ddfee55bd13c78f802dfc069b5863ec90
 - Chọn Có văn nghệ → Chi tiết tiết mục có dữ liệu.
 - Gửi lại cùng email/SĐT → web báo đã đăng ký.
 - Tắt/xóa Turnstile secret ở production để kiểm thử cấu hình → submit phải bị từ chối (sau đó khôi phục ngay).
