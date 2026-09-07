@@ -9,10 +9,10 @@ import { event } from "@/data/event";
 declare global { interface Window { onTurnstileSuccess?: (token: string) => void; onTurnstileExpired?: () => void; } }
 
 const typingPhrases = [
-  "nơi mỗi người mang một thanh âm riêng.",
-  "nơi những nhịp trẻ hòa thành một giai điệu chung.",
-  "nơi ý tưởng bắt lửa và truyền lửa cho nhau.",
-  "nơi Hòa Âm gặp gỡ Hỏa Ý."
+  "nơi mỗi người mang một màu sắc, thanh âm riêng.",
+  "nơi những tiếng cười tạo nên một không gian bùng cháy.",
+  "nơi khởi nguồn cho những tình bạn mới, quan hệ mới.",
+  "nơi đưa bạn trở về với quê hương từng gắn bó."
 ];
 
 function graphemes(text: string) {
@@ -143,7 +143,7 @@ export function HoaAmHoaYPage() {
       <div className="marquee" aria-label="Hòa Âm Hỏa Ý · Bắc Ninh · Tuổi trẻ · Kết nối · Tình nguyện">
         <div className="marquee-track" aria-hidden="true">
           {[0, 1, 2, 3].map((item) => (
-            <span className="marquee-set" key={item}>HÒA ÂM HỎA Ý ✦ BẮC NINH ✦ TUỔI TRẺ ✦ KẾT NỐI ✦ TÌNH NGUYỆN ✦&nbsp;</span>
+            <span className="marquee-set" key={item}>HÒA ÂM HỎA Ý ✦ SINH VIÊN BẮC NINH ✦ TÌNH NGUYỆN GẮN BÓ ✦ DÂN CA QUAN HỌ ✦ DANH TIẾNG VANG XA ✦&nbsp;</span>
           ))}
         </div>
       </div>
@@ -156,33 +156,33 @@ export function HoaAmHoaYPage() {
         <div className="concept-duo">
           <motion.article whileHover={{y:-7,rotate:-1}} className="concept-card harmony">
             <div className="concept-icon"><AudioLines/></div><small>01 / HÒA ÂM</small>
-            <h3>Nghe nhau. Bắt nhịp nhau.</h3>
-            <p>Mỗi người là một thanh âm khác biệt. Khi gặp được nhau, những cá tính riêng tạo thành một giai điệu chung.</p>
+            <h3>Cùng nghe, cùng hát, cùng hòa giọng.</h3>
+            <p>Từ Quan họ Bắc Ninh đến những ca khúc quen thuộc của tuổi sinh viên, kết hợp cùng những thanh âm riêng của mỗi người để tạo lên giai điệu chung vô cùng rực cháy.</p>
             <div className="concept-frequency" aria-hidden="true">{Array.from({length:22},(_,i)=><b key={i}/>)}</div>
           </motion.article>
           <motion.article whileHover={{y:-7,rotate:1}} className="concept-card fire">
             <div className="concept-icon"><Flame fill="currentColor"/></div><small>02 / HỎA Ý</small>
-            <h3>Ý tưởng chạm nhau. Lửa bật lên.</h3>
-            <p>Không chỉ gặp mặt, đây là lúc năng lượng, nhiệt huyết và những ý tưởng trẻ được truyền từ người này sang người khác.</p>
+            <h3>Cùng chơi, cùng chuyện trò, cùng hết mình.</h3>
+            <p>Những màn giao lưu, minigame và hoạt động đồng đội sẽ là lý do rất tự nhiên để những người xa lạ gặp nhau, làm quen, nói chuyện với nhau.</p>
             <div className="fire-reactor" aria-hidden="true"><i/><i/><i/><span><Flame fill="currentColor"/></span></div>
           </motion.article>
         </div>
         <div className="value-grid">
           {[
-            ["01","Bắt nhịp","Để khác biệt tìm được cùng tần số",<Headphones key="i"/>],
-            ["02","Truyền lửa","Để năng lượng đi xa hơn một người",<Flame key="i" fill="currentColor"/>],
-            ["03","Bật ý tưởng","Để một tia nhỏ thành điều đáng nhớ",<Zap key="i" fill="currentColor"/>],
-            ["04","Kết nối","Để sau cuộc gặp là một hành trình",<UsersRound key="i"/>]
+            ["01","GẶP NHAU","Bắt đầu từ những cái tên mới và những lời chào thân thương",<Headphones key="i"/>],
+            ["02","TỰ HÀO","Đến Quan họ và những câu chuyện mang màu sắc Bắc Ninh",<Flame key="i" fill="currentColor"/>],
+            ["03","CHƠI CÙNG NHAU","Cùng tham gia Minigame, thử thách nhóm với vô vàn tiếng cười",<Zap key="i" fill="currentColor"/>],
+            ["04","HÁT CÙNG NHAU","Có một khoảng thời gian dành riêng để mọi người cùng cất tiếng hát",<UsersRound key="i"/>]
           ].map(([n,title,desc,icon],i)=><motion.article whileHover={{y:-7}} className={`value-card value-${i+1}`} key={String(title)}><div className="value-top"><small>{n}</small><span className="value-icon">{icon}</span></div><div className="value-pulse" aria-hidden="true"><i/><i/><i/><i/><i/></div><h3>{title}</h3><p>{desc}</p></motion.article>)}
         </div>
       </section>
 
       <section className="typing-section section"><div className="typing-flame"><Flame fill="currentColor"/></div><span>Hòa Âm Hỏa Ý là…</span><h2>{typing}<i>|</i></h2><div className="soundline" aria-hidden="true">{Array.from({length:36},(_,i)=><b key={i}/>)}</div></section>
 
-      <section className="count-section section"><span className="eyebrow light">CHÚNG TA SẼ GẶP NHAU SAU</span><Countdown/><div className="calendar-info"><MiniCalendar/><div className="event-card"><span className="tape">HÒA ÂM HỎA Ý PASS</span><div><CalendarDays/><p><small>NGÀY</small><b>{event.dateLabel}</b></p></div><div><Clock3/><p><small>THỜI GIAN</small><b>{event.timeLabel}</b></p></div><div><MapPin/><p><small>ĐỊA ĐIỂM</small><b>{event.location}</b></p></div><div><Sparkles/><p><small>CHẤT RIÊNG</small><b>Mang theo phiên bản thật nhất của bạn</b></p></div><div><Backpack/><p><small>MANG THEO</small><b>{event.bring}</b></p></div><div><UsersRound/><p><small>ĐỐI TƯỢNG</small><b>{event.audience}</b></p></div></div></div></section>
+      <section className="count-section section"><span className="eyebrow light">CHÚNG TA SẼ GẶP NHAU SAU</span><Countdown/><div className="calendar-info"><MiniCalendar/><div className="event-card"><span className="tape">HÒA ÂM HỎA Ý PASS</span><div><CalendarDays/><p><small>NGÀY</small><b>{event.dateLabel}</b></p></div><div><Clock3/><p><small>THỜI GIAN</small><b>{event.timeLabel}</b></p></div><div><MapPin/><p><small>ĐỊA ĐIỂM</small><b>{event.location}</b></p></div><div><Sparkles/><p><small>CHẤT RIÊNG</small><b>Mang theo phiên bản thật nhất của bạn</b></p></div><div><Backpack/><p><small>MANG THEO</small><b>{event.bring}</b></p></div><div><UsersRound/><p><small>DÀNH CHO</small><b>{event.audience}</b></p></div></div></div></section>
 
       <section className="frequency-lab section">
-        <div className="frequency-copy"><span className="eyebrow">TRẠM HÒA TẦN SỐ</span><h2>Đến đây với<br/><i>chất riêng.</i></h2><p>Mang theo một câu chuyện, một giai điệu bạn thích và năng lượng sẵn sàng bắt nhịp. Mỗi cá tính là một tần số riêng — gặp nhau để Hòa Âm, chạm nhau để Hỏa Ý.</p><div className="frequency-tags"><span>01 · MỘT CÂU CHUYỆN</span><span>02 · MỘT GIAI ĐIỆU</span><span>03 · 100% CHẤT RIÊNG</span></div></div>
+        <div className="frequency-copy"><span className="eyebrow">TRẠM HÒA TẦN SỐ</span><h2>Đến đây với<br/><i>chất riêng.</i></h2><p>Mang theo một câu chuyện, một giai điệu bạn thích và năng lượng sẵn sàng bắt nhịp. Mỗi cá tính là một tần số riêng — gặp nhau để Hòa Âm, chạm nhau để Hỏa Ý.</p><div className="frequency-tags"><span>01 · MỘT CÂU CHUYỆN</span><span>02 · MỘT GIAI ĐIỆU</span><span>03 · MỘT TRÁI TIM</span></div></div>
         <div className="frequency-stage" aria-hidden="true">
           <div className="orbit orbit-one"><i>HÒA</i><i>ÂM</i></div><div className="orbit orbit-two"><i>HỎA</i><i>Ý</i></div>
           <div className="frequency-core"><div className="core-wave">{Array.from({length:9},(_,i)=><b key={i}/>)}</div><Flame fill="currentColor"/></div>
@@ -190,17 +190,17 @@ export function HoaAmHoaYPage() {
         </div>
       </section>
 
-      <section className="timeline-section section"><span className="eyebrow">FROM HELLO TO SEE YOU AGAIN</span><h2>Một buổi tối,<br/>rất nhiều <i>khoảnh khắc.</i></h2><div className="timeline">{event.timeline.map(([time,title,desc],i)=><motion.div className="timeline-row" key={time} initial={{opacity:0,x:i%2?-30:30}} whileInView={{opacity:1,x:0}} viewport={{once:true,amount:.35}}><time>{time}</time><div className="dot">{String(i+1).padStart(2,"0")}</div><div><h3>{title}</h3><p>{desc}</p></div></motion.div>)}</div></section>
+      <section className="timeline-section section"><span className="eyebrow">TIMELINE HÒA ÂM HỎA Ý</span><h2>Một buổi tối,<br/>rất nhiều <i>khoảnh khắc.</i></h2><div className="timeline">{event.timeline.map(([time,title,desc],i)=><motion.div className="timeline-row" key={time} initial={{opacity:0,x:i%2?-30:30}} whileInView={{opacity:1,x:0}} viewport={{once:true,amount:.35}}><time>{time}</time><div className="dot">{String(i+1).padStart(2,"0")}</div><div><h3>{title}</h3><p>{desc}</p></div></motion.div>)}</div></section>
 
       <section className="location section"><div className="location-card"><span className="eyebrow">CHÚNG TA SẼ GẶP NHAU Ở ĐÂU?</span><h2>{event.location}</h2><p><MapPin size={19}/>{event.address}</p><a className="btn primary" href={event.mapsUrl} target="_blank" rel="noopener noreferrer">XEM TRÊN GOOGLE MAPS <ArrowRight size={18}/></a></div><div className="map-frame"><iframe title="Bản đồ địa điểm Hòa Âm Hỏa Ý" src={event.mapsEmbedUrl} loading="lazy" referrerPolicy="no-referrer-when-downgrade" /></div></section>
 
       <section className="memories section"><span className="eyebrow">HÒA ÂM HỎA Ý SẼ CÓ…</span><h2>Những thứ đáng để<br/><i>nhớ thật lâu.</i></h2><div className="memory-grid">{[
-        ["01","TRÒ CHƠI","Bật mood ngay từ phút đầu",<PartyPopper key="m"/>],
-        ["02","LÀM QUEN","Từ người lạ thành người cùng nhịp",<UsersRound key="m"/>],
-        ["03","CHỤP ẢNH","Giữ lại những frame thật trẻ",<Camera key="m"/>],
-        ["04","HOẠT ĐỘNG NHÓM","Cùng làm, cùng cháy, cùng cười",<Zap key="m"/>],
-        ["05","GIAO LƯU","Nghe câu chuyện từ những thanh âm khác",<Music2 key="m"/>],
-        ["06","CƯỜI THẬT NHIỀU","Đi về với thêm vài người để nhớ",<Heart key="m" fill="currentColor"/>]
+        ["01","TRÒ CHƠI BẮT NHỊP","Phá băng cực nhanh, bật mood cực cháy",<PartyPopper key="m"/>],
+        ["02","KẾT NỐI ĐỒNG HƯƠNG","Gặp người cùng quê, tìm thêm người cùng tần số",<UsersRound key="m"/>],
+        ["03","CHECK-IN SÁNG TẠO","Lên hình thật chất, mang về những khoảnh khắc đáng nhớ",<Camera key="m"/>],
+        ["04","THỬ THÁCH ĐỒNG ĐỘI","Cùng phối hợp, cùng bứt phá, cùng tạo nên bất ngờ",<Zap key="m"/>],
+        ["05","CHUYỆN NHÀ – CHUYỆN MÌNH","Lắng nghe những câu chuyện gần gũi từ người Bắc Ninh xa quê",<Heart key="m" fill="currentColor"/>],
+        ["06","BÙNG NỔ HÒA ÂM","Khép lại một đêm rực rỡ, mở ra những tình bạn mới",<Music2 key="m"/>]
       ].map(([n,t,d,icon],i)=><motion.article className={`memory memory-${i+1}`} whileHover={{y:-5}} key={String(n)}><div className="memory-head"><span>{n}</span><div className="memory-icon">{icon}</div></div><div className="memory-signal" aria-hidden="true">{Array.from({length:8},(_,j)=><i key={j}/>)}</div><b>{t}</b><p>{d}</p><div className="memory-glow"/></motion.article>)}</div></section>
 
       <section className="ready section"><div className="ready-icons"><Headphones/><Flame fill="currentColor"/><Zap fill="currentColor"/></div><span>READY TO JOIN THE FREQUENCY?</span><h2>Đừng để bản hòa âm này<br/><i>thiếu bạn.</i></h2><p>Mang theo chất riêng của bạn. Phần còn lại, để chúng mình cùng bắt nhịp.</p><a className="btn light-btn" href="/dang-ky">LET&apos;S GO! <ArrowRight size={18}/></a></section>
