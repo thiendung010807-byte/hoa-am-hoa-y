@@ -236,7 +236,7 @@ export function HoaAmHoaYPage() {
         ["02","KẾT NỐI ĐỒNG HƯƠNG","Gặp người cùng quê, tìm thêm người cùng tần số",<UsersRound key="m"/>],
         ["03","CHECK-IN SÁNG TẠO","Lên hình thật chất, mang về những khoảnh khắc đáng nhớ",<Camera key="m"/>],
         ["04","THỬ THÁCH ĐỒNG ĐỘI","Cùng phối hợp, cùng bứt phá, cùng tạo nên bất ngờ",<Zap key="m"/>],
-        ["05","CHUYỆN NHÀ – CHUYỆN MÌNH","Lắng nghe những câu chuyện gần gũi từ người Bắc Ninh xa quê",<Heart key="m" fill="currentColor"/>],
+        ["05","CHUYỆN NHÀ - CHUYỆN MÌNH","Lắng nghe những câu chuyện gần gũi từ người Bắc Ninh xa quê",<Heart key="m" fill="currentColor"/>],
         ["06","BÙNG NỔ HÒA ÂM","Khép lại một đêm rực rỡ, mở ra những tình bạn mới",<Music2 key="m"/>]
       ].map(([n,t,d,icon],i)=><motion.article className={`memory memory-${i+1}`} whileHover={{y:-5}} key={String(n)}><div className="memory-head"><span>{n}</span><div className="memory-icon">{icon}</div></div><div className="memory-signal" aria-hidden="true">{Array.from({length:8},(_,j)=><i key={j}/>)}</div><b>{t}</b><p>{d}</p><div className="memory-glow"/></motion.article>)}</div></section>
 
