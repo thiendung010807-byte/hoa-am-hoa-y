@@ -11,7 +11,7 @@ declare global { interface Window { onTurnstileSuccess?: (token: string) => void
 const typingPhrases = [
   "nơi mỗi người mang một màu sắc, thanh âm riêng.",
   "nơi những tiếng cười tạo nên một không gian bùng cháy.",
-  "nơi khởi nguồn cho những tình bạn mới, quan hệ mới.",
+  "nơi khởi nguồn cho những tình bạn mới.",
   "nơi đưa bạn trở về với quê hương từng gắn bó."
 ];
 
@@ -194,13 +194,13 @@ export function HoaAmHoaYPage() {
           <motion.article whileHover={{y:-7,rotate:-1}} className="concept-card harmony">
             <div className="concept-icon"><AudioLines/></div><small>01 / HÒA ÂM</small>
             <h3>Cùng nghe, cùng hát, cùng hòa giọng.</h3>
-            <p>Từ Quan họ Bắc Ninh đến những ca khúc quen thuộc của tuổi sinh viên, kết hợp cùng những thanh âm riêng của mỗi người để tạo lên giai điệu chung vô cùng rực cháy.</p>
+            <p>Từ Quan họ Bắc Ninh tới những khúc hát thời sinh viên rực cháy nhiệt huyết tuổi trẻ, hoà quyện với thanh âm của riêng mỗi người tạo nên dàn hoà âm cháy bỏng.</p>
             <div className="concept-frequency" aria-hidden="true">{Array.from({length:22},(_,i)=><b key={i}/>)}</div>
           </motion.article>
           <motion.article whileHover={{y:-7,rotate:1}} className="concept-card fire">
             <div className="concept-icon"><Flame fill="currentColor"/></div><small>02 / HỎA Ý</small>
             <h3>Cùng chơi, cùng chuyện trò, cùng hết mình.</h3>
-            <p>Những màn giao lưu, minigame và hoạt động đồng đội sẽ là lý do rất tự nhiên để những người xa lạ gặp nhau, làm quen, nói chuyện với nhau.</p>
+            <p>Những tiết mục giao lưu, minigame và hoạt động đồng đội sẽ là sợi dây gắn kết để kết nối những tâm hồn đồng điệu, chúng ta sẽ cùng tạo nên những khoảnh khắc thật vui vẻ và đáng nhớ.</p>
             <div className="fire-reactor" aria-hidden="true"><i/><i/><i/><span><Flame fill="currentColor"/></span></div>
           </motion.article>
         </div>
@@ -208,8 +208,8 @@ export function HoaAmHoaYPage() {
           {[
             ["01","GẶP NHAU","Bắt đầu từ những cái tên mới và những lời chào thân thương",<Headphones key="i"/>],
             ["02","TỰ HÀO","Đến Quan họ và những câu chuyện mang màu sắc Bắc Ninh",<Flame key="i" fill="currentColor"/>],
-            ["03","CHƠI CÙNG NHAU","Cùng tham gia Minigame, thử thách nhóm với vô vàn tiếng cười",<Zap key="i" fill="currentColor"/>],
-            ["04","HÁT CÙNG NHAU","Có một khoảng thời gian dành riêng để mọi người cùng cất tiếng hát",<UsersRound key="i"/>]
+            ["03","CHƠI CÙNG NHAU","Thử thách nhóm với vô vàn điều thú vị chờ đón",<Zap key="i" fill="currentColor"/>],
+            ["04","HÁT CÙNG NHAU","Là thời gian để những lời hát thổi bùng ngọn lửa nhiệt huyết tuổi trẻ",<UsersRound key="i"/>]
           ].map(([n,title,desc,icon],i)=><motion.article whileHover={{y:-7}} className={`value-card value-${i+1}`} key={String(title)}><div className="value-top"><small>{n}</small><span className="value-icon">{icon}</span></div><div className="value-pulse" aria-hidden="true"><i/><i/><i/><i/><i/></div><h3>{title}</h3><p>{desc}</p></motion.article>)}
         </div>
       </section>
