@@ -248,7 +248,7 @@ export function HoaAmHoaYPage() {
           <a href={event.contact.pageUrl} target="_blank" rel="noopener noreferrer"><MessageCircle/><span><small>PAGE CỦA ĐỘI</small><b>Ghé thăm Page Đội</b></span><ExternalLink/></a>
           <a href={event.contact.supportGroupUrl} target="_blank" rel="noopener noreferrer"><UsersRound/><span><small>GROUP HTHT BẮC NINH</small><b>Hỗ trợ học tập K68 NEU</b></span><ExternalLink/></a>
           <a href={`mailto:${event.contact.leaderEmail}`}><Mail/><span><small>EMAIL CỦA ĐỘI</small><b>{event.contact.leaderEmail}</b></span><ArrowRight/></a>
-          <a href={`tel:${event.contact.leaderPhone.replace(/\s/g, "")}`}><Phone/><span><small>SĐT ĐỘI TRƯỞNG</small><b>{event.contact.leaderPhone}</b></span><ArrowRight/></a>
+          <a href={`tel:${event.contact.leaderPhone.replace(/\s/g, "")}`}><Phone/><span><small>SĐT ĐỘI TRƯỞNG (Phan Thị Thủy)</small><b>{event.contact.leaderPhone}</b></span><ArrowRight/></a>
         </div>
         <div className="footer-bottom"><strong>HÒA ÂM HỎA Ý ✦ 2026</strong><span>Made with 🎧 + 🔥 by Đội Sinh Viên Tình Nguyện Đồng Hương Bắc Ninh</span></div>
       </footer>
